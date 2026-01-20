@@ -1,0 +1,883 @@
+
+.present {
+  font-size:2rem;
+  position: absolute;
+  transform: translate3d(0, 0, 0);
+  cursor: pointer;
+  transition: transform 1s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.present.moving {
+  transition: transform 1s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.present.hidden {
+  opacity: 0; /* Coin becomes invisible */
+}
+
+header {
+	position: fixed;
+	top:0;
+	box-sizing: border-box;
+	width: 100%;
+	height: 7.4em;
+	padding: 1rem 1rem 1rem 1rem;
+	background: #c8d2e1;
+	font-family: Arial, sans-serif;
+	z-index: 999;
+}
+
+.header_nav {
+	height: 7.4em;
+	display:flex;
+	/*align-items: baseline;*/
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	align-content: flex-start;
+	width: 65%;
+	margin: 0 auto;
+}
+
+#logo_search_wrapper {
+	width: 78%;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+#nav_logo_div {
+  width:16em;
+  height: auto;
+  flex: 0 0 auto; /* Prevents it from growing or shrinking */
+  display: flex;
+  align-items: center;
+  order: -1; /* Keep logo and user on top */
+  position: static; /* Remove absolute positioning for smaller screens */    
+  max-width: 100%; /* Allow them to stretch */
+}
+
+#logo {
+	width:100%;
+	display: flex;
+	cursor: pointer;
+}
+
+/* Styling for the search field container */
+#nav_search_div {
+	width: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	background-color: #f5f5f5; /* Light gray background */
+	border: 1px solid #ccc; /* Subtle border */
+	padding: 5px 10px; /* Inner spacing */
+	margin: 0.2em auto;
+	height:2.5em;
+	min-width: 3em;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow */
+	order: 0;
+}
+
+/* Styling for the search button */
+#nav_search_div button {
+  background-color: transparent; /* No background */
+  border: none; /* Remove default border */
+  cursor: pointer; /* Pointer cursor on hover */
+  display: flex;
+  align-items: center;
+  padding: 0; /* Remove default padding */
+  box-shadow: none; /* Remove any additional shadows */
+}
+
+/* Styling for the search icon */
+#search_button img {
+	height: 100%;
+	width: auto;
+}
+
+/* Styling for the search input */
+#nav_search_input {
+	border: none; /* Remove default border */
+	outline: none; /* Remove focus outline */
+	font-size: 1.3rem; /* Readable font size */
+	background-color: transparent; /* Match container background */
+	flex-grow: 1;
+	width: 100%;
+}
+
+/* Placeholder text styling */
+#nav_search_input::placeholder {
+	color: #aaa; /* Light gray placeholder text */
+	font-style: italic; /* Optional style */
+}
+
+#nav_user_div {
+	order: 0; /* Keep logo and user on top */
+	width:10em;
+	display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+	margin-left: auto;
+}
+
+#user_game {
+	order: 1;
+	height: 2.9em;
+	width: 92%;
+	display: flex;
+    align-items: center;
+	justify-content: center;
+}
+
+#user_shopping_cart, #user_home {
+	height: 2.9em;
+	width: 2.9em;
+	margin-left:0.2em;
+	background-color: #f8f9fa;
+	border-radius: 50%;
+	display: flex; /* Flexbox aktivieren */
+    align-items: center; /* Vertikal zentrieren */
+    justify-content: center; /* Horizontal zentrieren */
+	border: 1px solid #f8f9fa;
+}
+
+#present_count_div {
+	position: relative;
+	height: 1.71em;
+	width: 1.71em;
+	margin-left:0.2em;
+	background-color: #f8f9fa;
+	border-radius: 50%;
+	display: flex; /* Flexbox aktivieren */
+    align-items: center; /* Vertikal zentrieren */
+    justify-content: center; /* Horizontal zentrieren */
+	/*border: 1px solid #516b94;*/
+}
+
+#present_count_div {
+	font-weight: bold;
+	font-size: 1.7rem;
+    color: #495057;
+}
+
+#present_overlap {
+	font-size: 0.9rem;
+	position: absolute;
+	bottom: 2.1rem;
+	right: 0;
+	z-index: 1001; 
+}
+
+#user_icon{
+	height: 2.5em; /* Maintain square proportions */
+	width: auto; /* Set a fixed size for icons */
+}
+
+#shopping_cart_icon{
+	height: 2.1em; /* Maintain square proportions */
+	width: auto; /* Set a fixed size for icons */
+}
+
+#game_extra {
+	display: flex;
+    align-items: center; 
+    justify-content: center; 
+}
+
+#my_progress {
+	width: 100%;
+	height: 1.6em;
+	background-color: #fac0a5;
+	border-radius: 0.5em;
+	border: 0.8em;
+	border-color:#495057;
+}
+
+#my_bar {
+	background-color: #d55c23;
+	height: 100%;
+	width: 0%; 
+	border-radius: 0.5em;
+}
+
+/* TEAMS */
+
+#userTeamName {
+	font-weight: bold;
+	font-size: 1.4rem;
+    color: #495057;
+}
+
+#team_score{
+	font-size: 0.8rem;
+}
+
+/****************************************************************************************************************************************************************************/
+
+/* Styling for the greyed-out background */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Greyed-out background */
+  z-index: 1000; /* Ensures it's above other elements */
+}
+
+/* Styling for the popup */
+.confirm_message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 1em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1010; /* Ensures it's above the overlay */
+  border-radius: 10px;
+  text-align: center;
+  align-items: center;
+  display:flex;
+  flex-direction:column;
+  width: 25%;
+}
+
+.confirm_message h3,
+.confirm_message h4 {
+	margin-block-start: 0.6em;
+    margin-block-end: 0.6em;
+}
+
+.messageButton {
+	padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+	margin-top: 1em;
+	background-color: #007BFF;
+    color: #fff;
+}
+
+.messageButton:hover {
+	background-color: #0056b3; /* Dunkleres Blau beim Hover */
+}
+
+/* Hidden class to hide elements initially */
+.hidden {
+  display: none;
+}
+
+#messageBronzeDiv{
+	width: 4em;
+	height: 4em;
+	border-radius: 50%;
+	border: 2px solid #fcc186;
+	background: linear-gradient(45deg, #fcc186, #c2672b);
+}
+
+#messageSilberDiv{
+	width: 4em;
+	height: 4em;
+	border-radius: 50%;
+	border: 2px solid white;
+	background: linear-gradient(45deg, #ededed, #bdbdbd);
+}
+
+#messageGoldDiv{
+	width: 4em;
+	height: 4em;
+	border-radius: 50%;
+	border: 2px solid #ffee6e;
+	background: linear-gradient(45deg, #ffee6e, #ccaa02);
+}
+
+.messageTeamDiv{
+	width: 100%;
+	padding: 0 0.5rem;
+	box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+	cursor: pointer;
+	margin-bottom: 0.1em;
+	background-color: #fff;
+}
+
+.messageTeamDiv:hover {
+	transform: scale(1.05); 
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.messageTeamDiv_selected{
+	background-color: #dcedfc;
+}
+
+.messageAvatarContainer{
+	display: flex;
+	flex-direction: row;
+	flex-wrap:wrap;
+	justify-content:space-evenly;
+}
+
+.messageAvatarDiv{
+	padding:1em;
+	box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+	cursor: pointer;
+	margin: 0.5em 0.8em;
+	background-color: #fff;
+}
+
+.messageAvatarDiv:hover {
+	transform: scale(1.05); 
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.messageAvatarDiv_selected{
+	background-color: #dcedfc;
+}
+
+.messageAvatarIcon {
+	font-size: 3rem;
+}
+
+/* Message on bottom right on screen */
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutToRight {
+    from {
+		opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.side_message{
+	width:20%;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding: 0.7em;
+	border-radius: .4em;
+	margin-bottom: 1em;
+	margin-right:0.3em;
+	background-color: #fff;
+	text-align:left;
+	border: 2px solid black;
+	visibility: hidden; /* Keeps it hidden but still present */
+    transition: opacity 0.5s ease-out;
+}
+
+.side_message:after{
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 70%;
+	width: 0;
+	height: 0;
+	border: 1em solid transparent;
+	border-top-color: black;
+	border-bottom: 0;
+	border-right: 0;
+	margin-left: -0.5em;
+	margin-bottom: -1em;
+}
+
+.side_message.show {
+    visibility: visible;
+    animation: slideInFromRight 0.5s ease-out forwards;
+}
+
+.side_message.slide-out {
+    animation: slideOutToRight 0.5s ease-out forwards;
+}
+.side_message.hidden {
+    visibility: hidden;
+}
+
+
+.teamMessage_header{
+	font-weight: bold;
+	font-size: 1rem;
+    color: #495057;
+	margin-bottom:0.2em;
+}
+
+.teamMessage_text{
+	font-size: 1rem;
+	border-radius: 0.5em;
+	background-color: #d8d8d8;
+	color: black;
+	padding: 1em;
+}
+
+
+/****************************************************************************************************************************************************************************/
+
+html {
+	height: 100%;
+}
+
+body {
+	font-family: Arial, sans-serif;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background-color: #f8f9fa; /* Leichter grauer Hintergrund */
+	color: #333; /* Dunkler Text */
+}
+
+main {
+	box-sizing: border-box;
+	margin-top:7em;
+	margin-bottom: 0px;
+	margin-right: auto;
+	margin-left: auto;
+	width: 65%;
+	/*padding: 1rem;*/
+	background: white; /* Weißer Hintergrund für den Inhalt */
+	/*border-radius: 8px;  */
+	/*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+}
+/*
+h1 {
+	font-size: 2.5rem;
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+	text-align: left;
+	color: white;
+	margin-bottom: 1.5rem;
+}
+
+h2 {
+	font-size: 1.8rem;
+	color: #495057; 
+	margin-bottom: 1rem;
+}
+*/
+#start_banner {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	margin: 0.6em 0em;
+	color: white;
+	font-size: 1.1rem;
+}
+#start_banner_news {
+	height: 14em;
+	width: 35%;
+	/*background-color: #e28743;*/
+	background: radial-gradient(circle, #e28743 35%, #e28743 0%, #d55c23 100%);
+	padding: 0.3em;
+	text-align:center;
+}
+#start_banner_news h3 {
+	font-size: 1.4rem;
+	color: white;
+}
+.p_center {
+	text-align:center;
+}
+.p_left {
+	text-align:left;
+}
+.p_left {
+	text-align:right;
+}
+
+#start_banner_angebot {
+	height: 14em;
+	width: 63%;
+	background: radial-gradient(circle, #e28743 35%, #e28743 0%, #d55c23 100%);
+	padding: 0.2em;
+    display: flex; /* Verwendet Flexbox für horizontale Ausrichtung */
+    overflow: hidden; /* Stellt sicher, dass der Inhalt nicht überläuft */
+	cursor: pointer;
+}
+
+#start_banner_angebot img {
+    height: auto; /* Beibehaltung des Verhältnisses */
+    object-fit: cover; /* Bildfüllung bei festen Größen */
+}
+
+#start_banner_angebot_text{
+    flex: 1; /* Text nimmt den restlichen Platz ein */
+    padding: 0.3em; /* Innenabstand für Text */
+    line-height: 1.5; /* Zeilenhöhe für Lesbarkeit */
+    text-align: left; /* Text linksbündig */
+    color: white;
+	font-size: 1rem;
+}
+
+#start_banner_angebot_text p{
+	margin-block-start: 0.6em;
+    margin-block-end: 0.2em;
+}
+
+#start_banner_angebot_name {
+	font-size: 1.1rem;
+	text-align:center;
+	color: white;
+	font-weight: bold;
+}
+
+#start_banner_angebot_preis {
+	/*text-shadow: white 10px 0 20px;*/
+	font-size: 1.6rem;
+	text-align:center;
+	color: black;
+	font-weight: bold;
+}
+
+/* Container für die Kategorien */
+#categories {
+	display: flex;
+	flex-wrap: wrap; /* Ermöglicht Umbruch bei kleineren Bildschirmen */
+	/*gap: 16px; */
+	justify-content: center; 
+	padding-top:1em;
+	padding-bottom:1em;
+}
+
+/* Einzelne Kategorie-Elemente */
+.category {
+	display: flex;
+	flex-direction: column; /* Bild und Button untereinander */
+	align-items: center; /* Zentriert Inhalt horizontal */
+	width: 8em; /* Maximale Breite für jede Kategorie */
+	padding: 0.6em;
+	text-align: center; /* Zentriert den Text im Button */
+	border: 1px solid #e9ecef;
+	margin: 0.5em;
+	cursor: pointer;
+}
+
+/* Styling für das Bild (Icon) */
+.category_icon {
+	width: 2.5rem; /* Einheitliche Breite für die Icons */
+	height: auto; /* Automatische Höhe, um das Seitenverhältnis beizubehalten */
+	/*margin-bottom: 8px;*/ /*Abstand zwischen Bild und Button */
+}
+
+#product_section {
+	padding:0em 1em 1em 1em; 
+}
+
+.category_button {
+	background:none;
+	border:none;
+	margin:0;
+	padding:0;
+	cursor: pointer;
+	font-size: 1.2rem;
+	color: #495057; 
+	margin: 0.5rem;
+}
+
+.category:hover {
+	transform: scale(1.05); /* Leichtes Vergrößern bei Hover */
+}
+
+/* Produktliste */
+.products {
+	display: flex;
+	flex-wrap: wrap; /* Zeilenumbruch aktivieren, wenn der Platz nicht reicht */
+	/*justify-content: space-between;  Abstand zwischen den Produkten */
+	gap: 0.5rem; /* Optional: zusätzlicher Abstand */
+}
+
+.product {
+	flex: 1 1 20%; /* Nimmt 30% der Breite ein */
+	max-width: 25%; /* Maximale Breite */
+	box-sizing: border-box; /* Padding und Border berücksichtigen */
+	display: flex;
+	flex-direction: column; /* Inhalte untereinander anordnen */
+	background: white;
+	padding: 1rem;
+	/*border: 1px solid #e9ecef;*/
+	overflow: hidden;
+	box-shadow: 0 5px 4px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+	cursor: pointer;
+}
+/*
+.product:hover {
+	transform: scale(1.05); 
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+*/
+.product img {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+	display: block;
+	margin-bottom:0.5em;
+}
+
+.products_name {
+	font-size: 1.2rem;
+	font-weight: bold;
+	text-align: left;
+	margin-bottom: auto;
+	color: #495057;
+}
+
+.products_price {
+	font-size: 1.5rem;
+	font-weight: bold;
+	text-align: right;
+	margin-top: auto;
+	color: #212529;
+}
+
+/* Footer */
+footer {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: #fff;
+    margin: 0 10px;
+}
+
+/* KLeiner Desktop Ansicht */
+@media (max-width: 1900px) {
+	main {
+		width: 75%;
+	}
+	
+	.header_nav {
+		width: 75%;
+	}
+
+	.side_message{
+		width:25%;
+	}
+	
+	.confirm_message {
+		width: 40%;
+	}
+	
+}
+
+/* Tablet Ansicht */
+@media (max-width: 1325px) {
+	#logo {
+		width:12em;
+	}
+	
+	main {
+		width: 90%;
+	}
+	
+	header {
+		width: 100%;
+		height: 6.9em;
+		padding:0.8em;
+	}
+	
+	.header_nav {
+		width: 100%;
+	}
+	
+	#start_banner_news h2 {
+		font-size: 1.5rem;
+	}
+	
+	#start_banner_news p {
+		margin-block-start: 0.6em;
+		margin-block-end: 0.6em;
+	}
+	
+	#start_banner_angebot {
+		width: 62%; 
+	}
+	
+	#start_banner_angebot_text{
+		line-height: 1.1; /* Zeilenhöhe für Lesbarkeit */
+		font-size: 0.8rem;
+		padding: 0.6rem;
+	}
+
+	#start_banner_angebot_name {
+		font-size: 1rem;
+	}
+
+	#start_banner_angebot_preis {
+		font-size: 1.2rem;
+	}
+	
+	.category {
+		width: 7.5em;
+		margin: 0.25em;
+	}
+
+	.product {
+		flex: 1 1 31%; /* Nimmt 45% der Breite ein */
+		max-width: 31%;
+	}
+	
+	.side_message{
+		width:50%;
+	}
+	
+	.confirm_message {
+		width: 40%;
+	}
+}
+
+@media (max-width: 1100px) {
+	.product {
+		flex: 1 1 49%; /* Nimmt 45% der Breite ein */
+		max-width: 49%;
+	}
+	
+	.confirm_message {
+		width: 50%;
+	}
+}
+
+@media (max-width: 880px) {
+	#start_banner_news {
+		width: 95%;
+		margin-bottom: 0.5em;
+	}
+	#start_banner_angebot {
+		width: 95%;
+	}
+	
+	.product {
+		flex: 1 1 49%; /* Nimmt 45% der Breite ein */
+		max-width: 49%;
+	}
+	
+	.confirm_message {
+		width: 70%;
+	}
+}
+
+/* Mobile Ansicht: 1 Spalte */
+@media (max-width: 768px) {
+	main {
+		width: 100%;
+		/*padding: 1rem;*/
+	}
+	
+	#logo {
+		width:8.5em;
+	}
+	
+	header {
+		width: 100%;
+		height: 7em;
+	}
+	
+	.header_nav {
+		width: 100%;
+	}
+	
+	#logo_search_wrapper {
+		width: 49%;
+	}
+
+	#nav_logo_div {
+		/*width: 50%;*/
+	}
+	
+	#nav_search_div {
+		order: 1; /* Push search below */
+		padding: 0.1em 0; /* Inner spacing */
+		margin: 0.8em 0;
+		width: 100%; 
+		height:2em;
+	}
+	
+	#nav_search_div button {
+	  width: 2em;
+	  padding: 0; /* Remove default padding */
+
+	}
+	
+	#nav_user_div {
+		order: 0;
+	}
+	
+	#nav_user_div img {
+		height: 2em;
+	}
+	
+	#start_banner {
+		justify-content: space-around;
+	}
+	
+	#start_banner_news {
+		width: 95%;
+		margin-bottom: 0.5em;
+	}
+	#start_banner_angebot {
+		width: 95%;
+	}
+	
+	#categories {
+		justify-content: center; 
+	}
+	
+	.category {
+		width: 5em;
+		margin: 0.25em;
+		padding: 0.35em 0.7em;
+	}
+	
+	.category_button {
+		font-size: 0.8rem;
+	}
+
+	.product_name {
+		font-size: 1.5rem;
+	}
+
+	main {
+		width: 95%;
+	}
+	
+	.side_message{
+		width:85%;
+	}
+	
+	.confirm_message {
+		width: 89%;
+	}
+	
+	.confirm_message p  {
+		margin-block-start: 0.6em;
+		margin-block-end: 0.6em;
+	}
+}
+
+@media (max-width: 500px) {
+	.product {
+			flex: 1 1 100%; /* Nimmt die volle Breite ein */
+			max-width: 100%;
+		}
+	
+}

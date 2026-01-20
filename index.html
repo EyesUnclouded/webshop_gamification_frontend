@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW, NOARCHIVE, NOODP">
+    <link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="style_product.css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+  </head>
+  <body>
+  
+	<header>
+		<div class="header_nav">
+			<div id="logo_search_wrapper">
+				<div id="nav_logo_div">
+					<img id="logo" src="images/logo-no-background.svg" loading="eager" fetchpriority="auto" onclick="openMain()">
+				</div>
+				<div id="nav_search_div">
+					<button type="button">
+						<img src="images/search_symbol.svg" loading="eager" fetchpriority="auto">
+					</button>
+					<input id="nav_search_input" placeholder="" type="search" autocomplete="off" value="">
+				</div>
+			</div>
+			
+			<div id="nav_user_div">
+				<div id="user_present"></div>
+				<div id="user_home"><img id="user_icon" src="images/user_icon.svg" loading="eager" fetchpriority="auto" onclick=""></div>
+				<div id="user_shopping_cart"><img id="shopping_cart_icon" src="images/shopping_cart_icon.svg" loading="eager" fetchpriority="auto" onclick=""></div>
+				<div id="user_game"></div>
+			</div>
+		</div>
+	</header>
+    <main id="main_content">
+    </main>
+	<div id="overlay" class="overlay hidden"></div>
+	<div id="confirm_message" class="confirm_message hidden"></div>
+	<div id="side_message" class="side_message hidden"></div>
+	<footer>
+        <div class="footer-links">
+            <a href="#" onclick="openImpressum()">Impressum</a>
+            <a href="#" onclick="openImpressum()">Datenschutz</a>
+            <a href="#" onclick="openImpressum()">AGB</a>
+            <a href="#" onclick="openImpressum()">Hilfe</a>
+        </div>
+        <p onclick="openImpressum()">© 2025 ELEKTROWELT Technik, Die Verbindet</p>
+    </footer>
+
+    <script>
+		
+		/**
+		Deering, S. (2011). Get URL parameters using jQuery. Retrieved April 13, 2020 from https://www.sitepoint.com/url-parameters-jquery/
+		 **/
+		function extractURL(name){
+			var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+			if (results==null){
+			   return null;
+			}
+			else{
+			   return results[1] || 0;
+			}
+		}
+		
+		function changeURL(content, params = {}) {
+			/**
+		Nolasco, F. (2013). How do we update URL or query strings using javascript/jQuery without reloading the page? Answer by user Fabio Nolasco. Retrieved April 13, 2020 from https://stackoverflow.com/a/19279268
+		 **/
+			if (history.pushState) {
+				var url = window.location.protocol + "//" + window.location.host + window.location.pathname + '?content=' + content;
+
+				if ('product_id' in params){
+					url += '&product_id=' + params['product_id'];
+				}
+				
+				if ('category_id' in params){
+					url += '&category_id=' + params['category_id'];
+				}
+
+				window.history.pushState({path:url},'',url);
+			}
+		}
+		
+		function updateGame(){
+			function updateBar(bar, present_count){
+				
+				let new_width = 10*present_count;
+				
+				bar.style.width = new_width + "%";
+			}
+			
+			let userPresentCount = Number(localStorage.getItem("user_present_count"));
+
+			document.getElementById("present_count").innerHTML = userPresentCount;
+			
+			/* Level und Progressbar*/
+			if (Number(localStorage.getItem("gruppe")) == 1){
+				
+				let user_bg = document.getElementById("user_home");
+				let my_bar =  document.getElementById("my_bar");
+				
+				updateBar(my_bar, userPresentCount);
+				
+				if (userPresentCount == 1){
+					user_bg.style.background = "linear-gradient(45deg, #fcc186, #c2672b)";
+				}
+				else if (4 <= userPresentCount && userPresentCount < 8){
+					user_bg.style.background = "linear-gradient(45deg, #ededed, #bdbdbd)";
+				}
+				else if (8 <= userPresentCount){
+					user_bg.style.background = "linear-gradient(45deg, #ffee6e, #ccaa02)";
+				}
+			} /* Teams */
+			else if (Number(localStorage.getItem("gruppe")) == 2){
+				if (localStorage.user_team != "null"){
+					const teams = ["Pionier", "Entdecker", "Künstler", "Träumer"];
+					const team_emojis = ["💡", "🔭", "🎨", "🧘"];
+					let team_score = 107 + userPresentCount;
+					
+					let user_team = Number(localStorage.getItem("user_team"));
+					document.getElementById("user_game").innerHTML = '<div id="userTeamName">'+teams[user_team]+' '+team_emojis[user_team]+'<br><div id="team_score">Team Score: '+ team_score +'</div></div>';
+				}
+			}
+			else if (Number(localStorage.getItem("gruppe")) == 3){
+				if (localStorage.user_avatar != "null"){
+					const avatarArray = ["👦", "👧" ,"👨","👩", "👴", "👵"];
+					const itemsArray = [ 0
+										,{"name":"Unterteile", "items": ["👖", "🩲", "🩳", "🚫"]}
+										,{"name":"Oberteile", "items": ["👚", "👕", "👔", "🚫"]}
+										,{"name":"Jacken", "items": ["🧥", "🥼", "🦺", "🚫"]}
+										,{"name":"Schuhe", "items": ["👟", "👠", "👞", "🚫"]}
+										,{"name":"Taschen", "items": ["👛", "🎒", "👜", "🚫"]}
+										,{"name":"Brillen", "items": ["👓", "🕶", "🥽", "🚫"]}
+										,{"name":"Hüte", "items": ["👒", "🎩", "🧢", "🚫"]}
+										,{"name":"Accessoires", "items": ["💍", "🎧", "🪭", "🚫"]}
+										,{"name":"Sport", "items": ["⚽", "🥊", "🏓", "🚫"]}
+										];
+					
+					let collectedItems = '';
+					
+					
+					if (0 < userPresentCount){
+						for (let i = 1; i <= userPresentCount; i++) {
+							//console.log("Loop Anfang");
+							
+							if (Number(localStorage.getItem("user_item"+i)) != 3){
+								console.log(Number(localStorage.getItem("user_item"+i)));
+								if (localStorage.getItem("user_item"+i)){
+									collectedItems = collectedItems + itemsArray[i]["items"][Number(localStorage.getItem("user_item"+i))] + ' ';
+								}
+							}
+							
+							//console.log("Loop Ende");
+						}
+					}
+					
+					//console.log(collectedItems);
+					document.getElementById("user_game").innerHTML = '<div id="userCollected">'+avatarArray[Number(localStorage.getItem("user_avatar"))]+' '+collectedItems+'</div>';
+				}
+			}
+		}
+
+		function triggerGame(userPresentCount){
+			/* Level und Progressbar*/
+			if (Number(localStorage.getItem("gruppe")) == 1){
+				if (userPresentCount == 1){
+					openMessage("levelBronze");
+				}
+				else if (userPresentCount == 4){
+					openMessage("levelSilber");
+				}
+				else if (userPresentCount == 8){
+					openMessage("levelGold");
+				}
+			}
+			else if (Number(localStorage.getItem("gruppe")) == 2){
+				if (0 < userPresentCount && userPresentCount < 10){
+					const messagesArray = [0, {"name": "Anja", "text": "Ein Punkt für unser Team, dankeeee 😊"}
+											, {"name": "Max", "text": "Noch ein Punkt für uns 🎯 Danke, dass du so mitziehst!"}
+											, {"name": "Hannah", "text": "Mit dir sind wir echt unschlagbar als Team!💪"}
+											, {"name": "Kathrin", "text": "Dein Einsatz macht den Unterschied für uns!👏"}
+											, {"name": "Jan", "text": "Ja! Weiter so 🔥"}
+											, {"name": "Aylin", "text": "So einen wie dich braucht jedes Team!🚀"}
+											, {"name": "Etienne", "text": "Teamwork at its best✨"}
+											, {"name": "Patrick", "text": "Gemeinsam sind wir unschlagbar"}
+											, {"name": "Klaudia", "text": "Sehr gut🎉 🎉 🎉"}
+											];
+					
+					const team_emojis = ["💡", "🔭", "🎨", "🧘"];
+					let user_team = Number(localStorage.getItem("user_team"));
+					
+					let message_content = '<div class="teamMessage_header"><strong>'+messagesArray[userPresentCount]["name"]+'</strong> aus deinem Team '+ team_emojis[user_team] +':</div><div class="teamMessage_text">'+messagesArray[userPresentCount]["text"]+'</div>';
+					openChatMessage(message_content);
+				}
+			}
+			else if (Number(localStorage.getItem("gruppe")) == 3){
+				if (0 < userPresentCount && userPresentCount < 10){
+					const itemsArray = [ 0
+										,{"name":"Unterteile", "items": ["👖", "🩲", "🩳", "🚫"]}
+										,{"name":"Oberteile", "items": ["👚", "👕", "👔", "🚫"]}
+										,{"name":"Jacken", "items": ["🧥", "🥼", "🦺", "🚫"]}
+										,{"name":"Schuhe", "items": ["👟", "👠", "👞", "🚫"]}
+										,{"name":"Taschen", "items": ["👛", "🎒", "👜", "🚫"]}
+										,{"name":"Brillen", "items": ["👓", "🕶", "🥽", "🚫"]}
+										,{"name":"Hüte", "items": ["👒", "🎩", "🧢", "🚫"]}
+										,{"name":"Accessoires", "items": ["💍", "🎧", "🪭", "🚫"]}
+										,{"name":"Sport", "items": ["⚽", "🥊", "🏓", "🚫"]}
+										];
+					
+					let itemsHTML =  `
+									<p>Die Kategorie <strong>`+ itemsArray[userPresentCount]["name"] +`</strong> wurde freigeschaltet.</p>
+									<p>Wenn du magst, suche dir für deinen Avatar ein neues Feature aus:</p>
+									<div class="messageAvatarContainer">
+										<div class="messageAvatarDiv" onclick="highlightItem(this, `+ userPresentCount +`, 0)">
+											<div class="messageAvatarIcon">`+ itemsArray[userPresentCount]["items"][0] +`</div>
+										</div>
+										<div class="messageAvatarDiv" onclick="highlightItem(this, `+ userPresentCount +`, 1)">
+											<div class="messageAvatarIcon">`+ itemsArray[userPresentCount]["items"][1] +`</div>
+										</div>
+										
+										<div class="messageAvatarDiv" onclick="highlightItem(this, `+ userPresentCount +`, 2)">
+											<div class="messageAvatarIcon">`+ itemsArray[userPresentCount]["items"][2] +`</div>
+										</div>
+										<div class="messageAvatarDiv" onclick="highlightItem(this, `+ userPresentCount +`, 3)">
+											<div class="messageAvatarIcon">`+ itemsArray[userPresentCount]["items"][3] +`</div>
+										</div>
+									</div>
+									
+									<div id="itemButtonPlaceholder"></div>`;
+									
+									
+					openChatMessage(itemsHTML, fadeout=false);
+				
+				}
+			}
+			
+			if (userPresentCount == 10){
+				openMessage("onGameWin");
+			}
+		}
+		
+		function chooseItem(presentIndex){
+			localStorage.setItem("user_item"+presentIndex, Number(localStorage.getItem("user_item_choice"+presentIndex)));
+			//console.log(Number(localStorage.getItem("user_item"+presentIndex)));
+			updateGame();
+		}
+		
+		function highlightItem(elem, presentIndex, itemIndex){
+			localStorage.setItem("user_item_choice"+presentIndex, itemIndex);
+			//console.log(Number(localStorage.getItem("user_item_choice"+presentIndex)));
+			
+			const collection = document.getElementsByClassName("messageAvatarDiv");
+			for (let i = 0; i < collection.length; i++) {
+				collection[i].classList.remove('messageAvatarDiv_selected'); 
+			}
+			
+			elem.classList.add('messageAvatarDiv_selected'); 
+			
+			document.getElementById("itemButtonPlaceholder").innerHTML = '<button class="messageButton" onclick="chooseItem('+presentIndex+');closeChatMessage();">Auswählen</button>';
+
+		}
+		
+		function placePresents(content, category_id = null, product_id = null){
+			
+			if (content == "category"){
+				let category_present = ContentObject.products_json["categories"][category_id]["present"];
+				
+				if (!JSON.parse(localStorage.getItem("user_presents")).includes(category_present[1])){
+					let spotId = "categoryPresent_spot" + category_present[0];
+					
+					document.getElementById(spotId).innerHTML = '<div id="'+ category_present[1] +'" class="present" onclick="collectPresent(this, '+ category_present[1] +')">🎁</div>';
+				}
+			}
+			else if (content == "product"){
+				let product_obj = ContentObject.products_json["categories"][category_id]["produkte"][product_id];
+				
+				if ("present" in product_obj){
+					if (!JSON.parse(localStorage.getItem("user_presents")).includes(product_obj["present"])){
+						
+						document.getElementById("product_present_e").innerHTML = '<div id="'+ product_obj["present"] +'" class="present" onclick="collectPresent(this, '+ product_obj["present"] +')">🎁</div>'; 
+					}
+				}
+			}
+		}
+		
+		function collectPresent(present, present_id){
+			event.stopPropagation();
+			let userPresentArray = JSON.parse(localStorage.getItem("user_presents"));
+			userPresentArray.push(present_id);
+			localStorage.setItem("user_presents",  JSON.stringify(userPresentArray));
+
+			// Get the bounding box of the coin
+			const coinRect = present.getBoundingClientRect();
+
+			// Calculate the center of the viewport
+			const viewportCenterX = window.innerWidth / 2;
+			const viewportCenterY = window.innerHeight / 2;
+
+			// Calculate the offset to move the coin to the center of the screen
+			const xOffset = viewportCenterX - coinRect.left - coinRect.width / 2;
+			const yOffset = viewportCenterY - coinRect.top - coinRect.height / 2;
+
+			// Set a higher z-index while moving
+			present.style.zIndex = "1001";
+
+			// Apply a transform using translate3d for smoother rendering
+			present.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 0) scale(2)`;
+
+			// Add the moving class to animate smoothly
+			present.classList.add("moving");
+			
+			// Shake the coin dynamically when it reaches the middle
+			setTimeout(() => {
+			  let shakeCount = 0;
+			  const shakeInterval = setInterval(() => {
+				if (shakeCount >= 6) {
+				  clearInterval(shakeInterval); // Stop shaking after 6 rotations
+				  return;
+				}
+
+				// Alternate between rotating left (-15deg) and right (15deg)
+				const rotation = shakeCount % 2 === 0 ? -250 : 250;
+				present.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 0) scale(0) rotate(${rotation}deg)`;
+				shakeCount++;
+			  }, 100); // Change rotation every 100ms
+			}, 900); // Start shaking after the movement finishes (1s)
+			
+			setTimeout(() => {
+				localStorage.user_present_count = Number(localStorage.user_present_count) + 1;
+				document.getElementById("present_count").innerHTML = localStorage.user_present_count;
+				updateGame();
+			}, 1300);
+			
+			setTimeout(() => {
+				triggerGame(Number(localStorage.user_present_count));
+			}, 1800);
+			
+			setTimeout(() => {
+				present.classList.add("hidden"); 
+			}, 2400);
+		}
+		
+		function openCategory(category_id, banner = false) {
+			
+			changeURL('category', {'category_id': category_id});
+			
+			/* Banner entfernen bei weiterem surfen */
+			if (!banner) {
+				document.getElementById("start_banner").innerHTML = "";
+			}
+			
+			document.getElementById("product_headline").innerHTML = ContentObject.products_json["categories"][category_id]["name"];
+		
+			let products_array = ContentObject.products_json["categories"][category_id]["produkte"];
+			let productsHTML = "";
+			
+			for (let i = 0; i < products_array.length; i++) {
+				
+				productsHTML += '<div id="productDiv_'+ i +'" class="product" onclick="openProduct(' + category_id + ',' + i + ')"><img src="images/' + products_array[i]["img"] + '" alt="Fernseher Bild" loading="eager" fetchpriority="auto"><div class="products_name">' + products_array[i]["name_kurz"] + '</div><div id="categoryPresent_spot'+ i +'"></div><div class="products_price">' + products_array[i]["preis"] + '</div></div>';
+			}
+			
+			document.getElementById("products").innerHTML = productsHTML;
+			
+			if (Number(localStorage.getItem("gruppe")) > 0){
+				placePresents("category", category_id);
+			}
+			
+			window.scrollTo(0, 0);
+		}
+		
+		function openProduct(category_id, product_id) {
+			
+			changeURL('product', {'category_id': category_id, 'product_id': product_id});
+			
+			let product_array = ContentObject.products_json["categories"][category_id]["produkte"][product_id];
+			
+			let main_product = `<div class="product_view">
+									<div id="product_gallery">
+										<img src="images/`+ product_array["img"] +`" alt="Produktbild" class="main-image">
+										<div id="product_present_e"></div>
+									</div>
+
+									<div id="product_details">
+										<h1 class="product-title">`+ product_array["name"] +`</h1>
+										<p class="product_brand">Marke: <span>`+ product_array["brand"] +`</span></p>
+										<p class="product_price">`+ product_array["preis"] +`</p>
+										<p class="product_rating">☆☆☆☆☆ (0 Bewertungen)</p>
+										
+										<div class="product_actions">
+											<div class="popup" onclick="openInactivePopup()">
+												<button class="buy_now">Jetzt kaufen</button>
+												<button class="add_to_cart">In den Warenkorb</button>
+												<span class="popuptext" id="myPopup">Funktion derzeit deaktiviert.</span>
+											</div>
+										</div>
+										
+										<div class="product_description">
+											<h2>Produktbeschreibung</h2>
+											`+ product_array["beschreibung"] +`
+										</div>
+									</div>
+								</div>`;
+								
+			document.getElementById("main_content").innerHTML = main_product;
+			
+			if (Number(localStorage.getItem("gruppe")) > 0){
+				placePresents("product", category_id, product_id);
+			}
+			
+			window.scrollTo(0, 0);
+		}
+		
+		function highlightTeam(elem, teamIndex){
+			localStorage.setItem("user_team_choice", teamIndex);
+			
+			const collection = document.getElementsByClassName("messageTeamDiv");
+			for (let i = 0; i < collection.length; i++) {
+				collection[i].classList.remove('messageTeamDiv_selected'); 
+			}
+			
+			elem.classList.add('messageTeamDiv_selected'); 
+			
+			if (document.getElementById("teamButtonPlaceholder").innerHTML == ''){
+				document.getElementById("teamButtonPlaceholder").innerHTML = '<button class="messageButton" onclick="chooseTeam();closeMessage();">Los geht\'s</button>';
+			}
+		}
+		
+		function chooseAvatar(){
+			localStorage.setItem("user_avatar", Number(localStorage.getItem("user_avatar_choice")));
+			updateGame();
+		}
+		
+		function highlightAvatar(elem, teamIndex){
+			localStorage.setItem("user_avatar_choice", teamIndex);
+			
+			const collection = document.getElementsByClassName("messageAvatarDiv");
+			for (let i = 0; i < collection.length; i++) {
+				collection[i].classList.remove('messageAvatarDiv_selected'); 
+			}
+			
+			elem.classList.add('messageAvatarDiv_selected'); 
+			
+			if (document.getElementById("avatarButtonPlaceholder").innerHTML == ''){
+				document.getElementById("avatarButtonPlaceholder").innerHTML = '<button class="messageButton" onclick="chooseAvatar();closeMessage();">Los geht\'s</button>';
+			}
+		}
+		
+		function chooseTeam(){
+			localStorage.setItem("user_team", Number(localStorage.getItem("user_team_choice")));
+			updateGame();
+		}
+		
+		function openChatMessage(message_content, fadeout=true){
+			
+			let messageElement = document.getElementById("side_message");
+			let timeout_time = 6000;
+			
+			if (messageElement.classList.contains('show')){
+				messageElement.classList.add("slide-out");
+					
+				setTimeout(() => {
+					messageElement.classList.remove("slide-out");
+					messageElement.classList.add('hidden');
+					messageElement.classList.remove("show");
+					
+					messageElement.innerHTML = message_content;
+			
+					messageElement.classList.remove('hidden');
+					messageElement.classList.add('show');
+					timeout_time = timeout_time + 6000;
+				}, 500); // Match animation duration (0.5s)
+			}
+			else {
+				messageElement.innerHTML = message_content;
+				
+				messageElement.classList.remove('hidden');
+				messageElement.classList.add('show');
+			}
+			
+			if (fadeout){
+				setTimeout(() => {
+					
+					messageElement.classList.add("slide-out");
+					
+					setTimeout(() => {
+						messageElement.classList.remove("slide-out");
+						messageElement.classList.remove("show");
+						messageElement.classList.add('hidden');
+					}, 500); // Match animation duration (0.5s)
+					
+				}, timeout_time);
+			}
+		}
+		
+		function closeChatMessage(){
+			let messageElement = document.getElementById("side_message");
+			
+			messageElement.classList.add('hidden'); 
+		}
+		
+		function openMessage(message_id){
+			
+			let messageElement = document.getElementById("confirm_message");
+			let overlayElement = document.getElementById("overlay");
+			
+			switch(message_id) {
+				case "onWebshopStart_Kompetenz":
+					var message_text = 	`
+										<h3>🎁 Geschenke-Jagd 🎁<br>Finde und Gewinne!</h3>
+										<p>Aufgepasst! Auf unserer Website haben sich <strong>10 Geschenke</strong> versteckt – und sie warten nur darauf, von dir gefunden zu werden!</p>
+										
+										<h4>📌 So funktioniert’s:</h4>
+										<p><strong>1.</strong> Suche die Geschenke, die überall auf der Webseite versteckt sind.</p>
+										<p><strong>2.</strong> Klicke auf jedes gefundene Geschenk, um es zu sammeln.</p>
+										<p><strong>3.</strong> Wenn du alle Geschenke findest, erhältst du <strong>15 % Rabatt</strong> auf deine erste Bestellung.</p>
+										
+										<p><strong>Bist du bereit, loszulegen?</strong> 🕵️‍♀️ </p>
+										<button class="messageButton" onclick="closeMessage()">Starten</button>
+										`;
+					break;
+				case "onWebshopStart_Team":
+					var message_text = 	`
+										<h3>🎁 Geschenke-Jagd 🎁<br>Gemeinsam finden und gewinnen!</h3>
+										<p>Aufgepasst! Auf unserer Website haben sich <strong>10 Geschenke</strong> versteckt – und sie warten nur darauf, von dir gefunden zu werden! <br>Jedes Geschenk, das du findest, zählt für dich und dein Team!</p>
+										
+										<h4>📌 So funktioniert’s:</h4>
+										<p><strong>1.</strong> Wähle dein Team und werde Teil des Spiels.</p>
+										<p><strong>2.</strong> Suche nach den Geschenken auf der Website und klicke sie an, um sie zu sammeln.</p>
+										<p><strong>3.</strong> Wenn du alle Geschenke findest, erhältst du <strong>15 % Rabatt</strong> auf deine erste Bestellung.</p>
+										<p><strong>4.</strong> Findet dein Team gemeinsam 500 Geschenke, gibt es eine <strong>Extra-Überraschung</strong> für alle Mitglieder.</p>
+										
+										<p><strong>Bist du bereit, loszulegen?</strong> 🕵️‍♀️ </p>
+										<button class="messageButton" onclick="closeMessage();openMessage('teamWahl');">Team wählen</button>
+										`;
+					break;
+				case "onWebshopStart_Autonomie":
+					var message_text = 	`
+										<h3>🎁 Geschenke-Jagd 🎁<br>Finde und Gewinne!</h3>
+										<p>Aufgepasst! Auf unserer Website haben sich <strong>10 Geschenke</strong> versteckt – und sie warten nur darauf, von dir gefunden zu werden!</p>
+										
+										<h4>📌 So funktioniert’s:</h4>
+										<p><strong>1.</strong> Erstelle deinen eigenen Avatar und werde Teil des Spiels.</p>
+										<p><strong>2.</strong> Suche nach den Geschenken auf der Webseite und klicke sie an, um sie zu sammeln.</p>
+										<p><strong>3.</strong> Wenn du alle Geschenke findest, erhältst du <strong>15 % Rabatt</strong> auf deine erste Bestellung.</p>
+										
+										<p><strong>Bist du bereit, loszulegen?</strong> 🕵️‍♀️  </p>
+										<button class="messageButton" onclick="closeMessage();openMessage('autonomieWahl');">Avatar erstellen</button>
+										`;
+					break;
+				case "levelBronze":
+					var message_text = 	`
+										<h3>🎈 Herzlichen Glückwunsch! 🎈</h3>
+										<h2>Du hast das Bronze Level erreicht!</h2>
+										<div id="messageBronzeDiv"></div>
+										<button class="messageButton" onclick="closeMessage()">Weiter</button>
+										`;
+					
+					break;
+				case "levelSilber":
+					var message_text = 	`
+										<h3>🎈 Herzlichen Glückwunsch! 🎈</h3>
+										<h2>Du hast das Silber Level erreicht!</h2>
+										<div id="messageSilberDiv"></div>
+										<button class="messageButton" onclick="closeMessage()">Weiter</button>
+										`;
+					
+					break;
+				case "levelGold":
+					var message_text = 	`
+										<h3>🎈 Herzlichen Glückwunsch! 🎈</h3>
+										<h2>Du hast das Gold Level erreicht!</h2>
+										<div id="messageGoldDiv"></div>
+										<button class="messageButton" onclick="closeMessage()">Weiter</button>
+										`;
+					
+					break;
+				case "teamWahl":
+					var message_text = 	`
+										<h3>👪 Wähle das Team 👪<br>das am besten zu dir passt! </h3>
+										<div class="messageTeamDiv" onclick="highlightTeam(this, 0)">
+											<h3>💡 Pionier 💡</h3>
+											<p><strong>Du bist ein Wegbereiter, immer bereit, neue Herausforderungen zu meistern.</strong></p>
+										</div>
+										<div class="messageTeamDiv" onclick="highlightTeam(this, 1)">
+											<h3>🔭 Entdecker 🔭</h3>
+											<p><strong>Du liebst das Unbekannte und steckst voller Neugier.</strong></p>
+										</div>
+										<div class="messageTeamDiv" onclick="highlightTeam(this, 2)">
+											<h3>🎨 Künstler 🎨</h3>
+											<p><strong>Du bist ein kreativer Kopf mit ständig neuen Ideen.</strong></p>
+										</div>
+										<div class="messageTeamDiv" onclick="highlightTeam(this, 3)">
+											<h3>🧘 Träumer 🧘</h3>
+											<p><strong>Du siehst die Welt voller Möglichkeiten und hast viel Fantasie.</strong></p>
+										</div>
+
+										<div id="teamButtonPlaceholder"></div>
+										`;
+					
+					break;
+				case "autonomieWahl":
+					const avatarArray = ["👦", "👧" ,"👨","👩", "👴", "👵"];
+					var message_text = 	`
+										<h3>Wähle die Grundlage für deinen Avatar!</h3> 
+										<p>Gestalte ihn im Laufe des Spiels nach deinen Vorstellungen</p>
+										<div class="messageAvatarContainer">
+											<div class="messageAvatarDiv" onclick="highlightAvatar(this, 0)">
+												<div class="messageAvatarIcon">👦</div>
+											</div>
+											<div class="messageAvatarDiv" onclick="highlightAvatar(this, 1)">
+												<div class="messageAvatarIcon">👧</div>
+											</div>
+											
+											<div class="messageAvatarDiv" onclick="highlightAvatar(this, 2)">
+												<div class="messageAvatarIcon">👨</div>
+											</div>
+											<div class="messageAvatarDiv" onclick="highlightAvatar(this, 3)">
+												<div class="messageAvatarIcon">👩</div>
+											</div>
+											
+											<div class="messageAvatarDiv" onclick="highlightAvatar(this, 4)">
+												<div class="messageAvatarIcon">👴</div>
+											</div>
+											<div class="messageAvatarDiv" onclick="highlightAvatar(this, 5)">
+												<div class="messageAvatarIcon">👵</div>
+											</div>
+										</div>
+										
+										<div id="avatarButtonPlaceholder"></div>
+										`;
+					
+					break;
+				case "onGameWin":
+					var message_text = 	`
+										<h2>🎁 Herzlichen Glückwunsch! 🎁</h2>
+										<p>Du hast alle 10 Geschenke gefunden!</p>
+										<h3>Dein persönlicher Gutscheincode: 10Geschenke#329483</h3>
+										<p>Gebe den Code einfach beim Check Out ein und bekomme 15% Rabatt auf deinen ersten Einkauf!</p>
+										<button class="messageButton" onclick="closeMessage()">Weiter</button>
+										`;
+					break;
+				default:
+					var message_text = ``;
+			}
+			
+			messageElement.innerHTML = message_text;
+			
+			messageElement.classList.remove('hidden');
+			overlayElement.classList.remove('hidden');
+		}
+		
+		function closeMessage(){
+			let messageElement = document.getElementById("confirm_message");
+			let overlayElement = document.getElementById("overlay");
+			
+			messageElement.classList.add('hidden'); 
+			overlayElement.classList.add('hidden'); 
+		}
+		
+		function openInactivePopup() {
+			var popup = document.getElementById("myPopup");
+			popup.classList.toggle("show");
+		}
+		
+		function openImpressum() {
+			
+			changeURL('impressum');
+			
+			let impressumHTML = `<section id="impressum">
+								<h1>Impressum</h1>
+								
+								Hinweis<br>
+								<p>Diese Webseite wurde im Rahmen einer wissenschaftlichen Studie an der Universität erstellt.</p>
+								<p>Sie dient ausschließlich Forschungszwecken und verfolgt keinerlei kommerzielle Absichten.</p>
+								<p>© 2025 ELEKTROWELT Technik, Die Verbindet ist kein reales Unternehmen und dient auch nur als Platzhalter für das Aussehen der Webseite.</p>
+							</section>`;
+							
+			document.getElementById("main_content").innerHTML = impressumHTML;
+			
+			window.scrollTo(0, 0);
+		}
+		
+		function initCategoryView(){
+			/* Bildschirmgröße hinterlegen */
+			var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+			
+			var mobile = null;
+			
+			/* Auf mobilen Geräten kein Sonderangebot anzeigen */
+			if (width > 880){
+				mobile = 0;
+				main_start_banner =  	`<section id="start_banner">
+											<div id="start_banner_news" onclick="openProduct(0, 0)">
+												<h3>% ANGEBOT DER WOCHE %</h3>
+												<p class="p_center"><strong>Der HISENSE 43A6N LED TV</strong></p>
+												<p class="p_center"> Jede Woche ein neues Highlight - Verpasse kein Super-Schnäppchen!</p>
+											</div>
+											<div id="start_banner_angebot" onclick="openProduct(0, 0)">
+											</div>
+										</section>`;
+			}
+			else {
+				mobile = 1;
+				main_start_banner =  	`<section id="start_banner">
+											<div id="start_banner_news" onclick="openProduct(0, 0)">
+												<h2>% ANGEBOT DER WOCHE %</h2>
+												<p class="p_center"><strong>Der HISENSE 43A6N LED TV</strong></p>
+												<p class="p_center">Statt 380,- € jetzt nur 315,- €</p>
+											</div>
+										</section>`;
+			}
+			
+			const main_categories = `<section id="category_section">
+										<div id="categories">
+										</div>
+									</section>`
+									+ main_start_banner +
+									`<section id="product_section">
+										<h2 id="product_headline">Produkte</h2>
+										<div class="products" id="products">
+										</div>
+									</section>`;
+			
+			document.getElementById("main_content").innerHTML = main_categories;
+			
+			/* Sonderangebot befüllen */ 
+			if (mobile == 0){
+				let sale_product_array = ContentObject.products_json["categories"][0]["produkte"][0];
+				
+				document.getElementById("start_banner_angebot").innerHTML = '<img src="images/' + sale_product_array["img"] + '" alt="Fernseher Bild" loading="eager" fetchpriority="auto"><div id="start_banner_angebot_text"><p id="start_banner_angebot_name">' + sale_product_array["name"] + '</p><p>Der Hisense A6N Smart TV besticht durch Bilder in herausragender Schärfe und glasklaren Kontrasten durch eine Auflösung in Ultra-HD mit 3.840 x 2.160 Pixeln.</p><div id="start_banner_angebot_preis">' + sale_product_array["preis"] + '</div></div>';
+			}
+			
+			/* Kategorien ausgeben */
+			
+			let categoriesHTML = "";
+			const categories = ContentObject.products_json["categories"];
+			
+			for (let i = 0; i < categories.length; i++) {
+				let categoryName = categories[i]["name"];
+				categoriesHTML += '<div class="category" onclick="openCategory(' + i + ')"><img class="category_icon" src="images/' + categories[i]["icon"] + '" alt="Icon" loading="eager" fetchpriority="auto"><button class="category_button" type="button" onclick="openCategory(' + i + ')">' + categoryName + '</button></div>';
+			}
+
+			document.getElementById("categories").innerHTML = categoriesHTML;
+		}
+		
+		function openMain(){
+			changeURL('main');
+			loadContent();
+		}
+		
+		function loadContent(){
+			
+			if (!localStorage.gruppe) {
+				let gruppe_param = extractURL("g");
+				if (gruppe_param == null){
+					return;
+				}
+				localStorage.setItem("gruppe", gruppe_param);
+			}
+			
+			if (!localStorage.firstStart) {
+				localStorage.setItem("firstStart", 1);
+			}
+			
+			if (!localStorage.user_present_count) {
+				localStorage.setItem("user_present_count", 0);
+			} 
+			
+			if (!localStorage.user_presents) {
+				localStorage.setItem("user_presents", "[]");
+			} 
+			
+			if (Number(localStorage.getItem("gruppe")) > 0){
+				
+				document.getElementById("user_present").innerHTML = '<div id="present_count_div"><div id="present_count">0</div><div id="present_overlap">🎁</div></div>';
+				
+				if (Number(localStorage.getItem("gruppe")) == 1){
+					document.getElementById("user_game").innerHTML = '<div id="my_progress"><div id="my_bar"></div></div>';
+				}
+				else if (Number(localStorage.getItem("gruppe")) == 2){
+					document.getElementById("user_game").innerHTML = '<div id="my_team"></div>';
+					
+					if (!localStorage.user_team) {
+						localStorage.setItem("user_team", null);
+					} 
+				}
+				else if (Number(localStorage.getItem("gruppe")) == 3){
+					if (!localStorage.user_avatar) {
+						localStorage.setItem("user_avatar", null);
+					} 
+				}
+				
+				updateGame();
+			}
+			
+			window.ContentObject = {products_json: null};
+			ContentObject.products_json = {"categories":[{"name":"Fernseher","icon":"category_television_icon.svg","present":[5,1],"produkte":[{"id":"fernseher_1","name":"HISENSE 43A6N LED TV (Flat, 43 Zoll / 108 cm, UHD 4K, SMART TV)","brand":"Hisense","Artikelnummer":"2922659","img":"Fernseher_Bild_1.webp","preis":"<s>380,-</s> 315,- €","preis_angebot":"","beschreibung":"<p>Erleben Sie erstklassige Unterhaltung mit dem Hisense A6N 43 Zoll LED TV. Die 4K-Auflösung (3.840 x 2.160 Pixel) und HDR-Technologie sorgen für lebendige Farben und außergewöhnliche Details. Dank Precision Colour und Dolby Vision genießen Sie realistische Bilder – auch in dunklen Szenen.</p><p><strong>Leistungsstark und smart</strong></p><p>Der Quad-Core-Prozessor und das VIDAA Betriebssystem garantieren eine schnelle und flüssige Bedienung. Über die Sprachsteuerung steuern Sie Ihren TV bequem per Stimme. Perfekt für Filme, Serien und Spiele.</p><p><strong>Gaming und Sound</strong></p><p>Der Game Mode Plus sorgt für optimierte Grafiken und flüssiges Gaming. Das 2.0-Kanal-Klangsystem liefert klaren und kraftvollen Sound für ein rundum gutes Erlebnis.</p><p><strong>Vielseitige Anschlüsse und smartes Design</strong></p><p>Mit 3 HDMI-Anschlüssen, 2 USB-Ports und integrierter WLAN- und Bluetooth-Funktion ist der TV perfekt für alle Geräte. Das schlichte Design passt in jedes Zuhause und ermöglicht eine Wandmontage.</p><p><strong>Energieeffizienz</strong></p><p>Mit einer Energieeffizienzklasse E und niedrigem Standby-Verbrauch (0,5 Watt) ist der TV umweltfreundlich und sparsam.</p><p><strong>Lieferumfang:</strong></p><ul><li>1x Hisense A6N 43 Zoll LED TV</li><li>1x Fernbedienung</li><li>1x Netzkabel</li><li>2x AAA Batterien</li><li>1x Bedienungsanleitung</li></ul><p><strong>Technische Details:</strong></p><ul><li>43 Zoll UHD 4K (3.840 x 2.160 Pixel)</li><li>Dolby Vision, HDR10</li><li>VIDAA Betriebssystem, Quad-Core-Prozessor</li><li>3x HDMI 2.1, 2x USB 2.0, 1x CI+</li><li>WLAN, Bluetooth</li><li>Energieverbrauch: 42 Watt (SDR), 73 Watt (HDR), 0,5 Watt Standby</li></ul><p>Der Hisense A6N 43 Zoll LED TV bringt brillante Bilder, smarte Funktionen und einen erstklassigen Klang – perfekt für Ihr Heimkino!</p>","name_kurz":"HISENSE 43A6N LED TV"},{"id":"fernseher_2","name":"HISENSE 40A4K LED TV (Flat, 40 Zoll / 101 cm, Full-HD, SMART TV, VIDAA U6)","brand":"Hisense","Artikelnummer":"2864900","img":"Fernseher_Bild_2.webp","preis":"266,- €","preis_angebot":"","beschreibung":"<p>Erleben Sie klarste Full-HD-Bildqualität mit dem HISENSE 40A4K LED TV! Mit einer Bildschirmdiagonale von 40 Zoll (101 cm) und einer Auflösung von 1.920 x 1.080 Pixeln genießen Sie gestochen scharfe Details und lebendige Farben. Ausgestattet mit dem VIDAA U6 Betriebssystem, ermöglicht dieser SMART TV einen schnellen Zugriff auf beliebte Apps und Streaming-Dienste. Der TV verfügt über einen Triple Tuner (DVB-T2 HD, DVB-C, DVB-S/S2) für vielfältigen Empfang und bietet eine einfache Bedienung durch Sprachsteuerung mit Amazon Alexa und Google Assistant. Mit 2 HDMI-Anschlüssen, 2 USB-Ports und WLAN bietet der 40A4K zahlreiche Anschlussmöglichkeiten, um all Ihre Geräte zu integrieren. Der integrierte Media Player ermöglicht das Abspielen Ihrer Lieblingsinhalte direkt vom USB-Stick. Das schlanke Design und die einfache VESA-Montage bieten Flexibilität bei der Platzierung des Geräts. Mit einer Energieeffizienzklasse F und einer niedrigen Leistungsaufnahme ist der HISENSE 40A4K TV auch besonders energiesparend. Im Lieferumfang sind der LED TV, eine Fernbedienung und eine Bedienungsanleitung enthalten.</p><p><strong>Technische Merkmale:</strong></p><ul><li>Full-HD Auflösung (1.920 x 1.080 Pixel)</li><li>VIDAA U6 Betriebssystem für SMART TV-Funktionen</li><li>Triple Tuner für DVB-T2 HD, DVB-C, DVB-S/S2</li><li>Sprachsteuerung kompatibel mit Amazon Alexa und Google Assistant</li><li>2 HDMI 1.4 Anschlüsse, 2 USB 2.0 Anschlüsse, WLAN</li><li>Bildschirmdiagonale: 40 Zoll (101 cm)</li><li>Energieeffizienzklasse F</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>HISENSE 40A4K LED TV</li><li>Fernbedienung</li><li>Bedienungsanleitung</li></ul><p>Perfekt für Ihr Heimkino oder als vielseitiger Fernseher für den täglichen Gebrauch!</p>","name_kurz":"HISENSE 40A4K LED TV"},{"id":"fernseher_3","name":"HISENSE 32A4K LED TV (Flat, 32 Zoll / 80 cm, HD-ready, SMART TV, VIDAA U)","brand":"Hisense","Artikelnummer":"2864899","img":"Fernseher_Bild_3.webp","preis":"189,- €","preis_angebot":"","beschreibung":"<p>Der HISENSE 32A4K LED TV überzeugt mit einem kompakten 32 Zoll (80 cm) Bildschirm und bietet eine HD-Ready Auflösung von 1366 x 768 Pixeln, die für klare und scharfe Bilder sorgt. Der TV unterstützt eine native Bildwiederholfrequenz von 60 Hz und bietet somit eine angenehme Darstellung bei alltäglichen Anwendungen und TV-Inhalten. Mit dem 16:9 Bildverhältnis und der LED-Technologie können Sie eine gute Bildqualität in einem kompakten Design genießen. Der HISENSE 32A4K ist ein echter Smart TV, ausgestattet mit dem VIDAA U6 Betriebssystem, das Ihnen einfachen Zugang zu verschiedenen Apps und Streamingdiensten ermöglicht. Über die integrierten Anschlüsse, darunter 2 HDMI 1.4 Anschlüsse (einschließlich ARC), 2 USB-Anschlüsse und ein CI+-Slot, können Sie bequem externe Geräte anschließen. Der TV unterstützt zudem DVB-T2 HD, DVB-C, DVB-S und DVB-S2, was Ihnen eine Vielzahl an Empfangsmöglichkeiten bietet. Mit einer Musikleistung von 12 Watt sorgt der HISENSE 32A4K für einen guten Klang, der durch den integrierten Media Player noch ergänzt wird. Weitere Features wie die Kindersicherung und der Hotel-Modus machen den TV auch für besondere Anwendungen geeignet. Die VESA-Norm von 100 x 200 mm erlaubt eine einfache Wandmontage. Der TV wird mit einer Fernbedienung, einer Bedienungsanleitung und dem TV-Gerät geliefert. Der HISENSE 32A4K überzeugt nicht nur durch seine praktische Ausstattung und smarten Funktionen, sondern auch durch seine Energieeffizienz, mit einer Leistungsaufnahme von nur 27 Watt im Betrieb und einer Energieeffizienzklasse F.</p>","name_kurz":"HISENSE 32A4K LED TV"},{"id":"fernseher_4","name":"SAMSUNG GU32T5379CD LED TV (Flat, 32 Zoll / 80 cm, Full-HD, SMART TV, Tizen™)","brand":"Samsung","Artikelnummer":"2863147","img":"Fernseher_Bild_4.webp","preis":"299,99 €","preis_angebot":"","beschreibung":"<p>Erleben Sie beeindruckende Bildqualität mit dem SAMSUNG GU32T5379CD LED TV in einer Größe von 32 Zoll (80 cm). Dieser SMART TV bietet eine Full-HD-Auflösung von 1.920 x 1.080 Pixeln und unterstützt HDR10 für lebendige Farben und einen hohen Kontrast. Mit Tizen™ als Betriebssystem erhalten Sie Zugang zu zahlreichen Apps und Streaming-Diensten direkt auf Ihrem TV.</p><p><strong>Technische Merkmale:</strong></p><ul><li><strong>Bildqualität:</strong> Full-HD, 1.920 x 1.080 Pixel, HDR10</li><li><strong>Bildverhältnis:</strong> 16:9, 60 Hz Bildwiederholfrequenz</li><li><strong>Ton:</strong> Dolby Digital Plus Klangsystem</li><li><strong>Anschlüsse:</strong> 2x HDMI, 1x USB, CI+, LAN, Antenneneingang, Komponenteneingang (Y/Pb/Pr), Digital-Audioausgang (optisch)</li><li><strong>Smart TV-Funktionen:</strong> WLAN, HbbTV, App-Steuerung</li><li><strong>Abmessungen:</strong> 737,4 mm x 438 mm x 74,1 mm (ohne Standfuß), 737,4 mm x 465,4 mm x 150,5 mm (mit Standfuß)</li><li><strong>Gewicht:</strong> 4,1 kg (mit Standfuß)</li><li><strong>Energieverbrauch:</strong> 27,4 Watt (im Ein-Zustand, SDR)</li></ul><p>Dieser SAMSUNG LED TV sorgt für erstklassige Unterhaltung und ist mit HDR und einem klaren, detailreichen Bild ausgestattet. Die SMART TV-Funktionen und die einfache Bedienung durch die Tizen™-Plattform bieten Ihnen die Möglichkeit, Ihr Fernseherlebnis auf das nächste Level zu heben. Der Fernseher ist in einem eleganten Nachtschwarz gehalten und passt sich perfekt in jedes Zuhause ein.</p><p><strong>Lieferumfang:</strong></p><ul><li>SAMSUNG GU32T5379CD LED TV</li><li>Fernbedienung inkl. Batterien</li><li>Stromkabel</li><li>Anleitung</li></ul><p><strong>Energieeffizienz:</strong></p><p>Mit einer Energieeffizienzklasse F für SDR-Inhalte und G für HDR-Inhalte ist der TV energiesparend im Gebrauch.</p><p>Perfekt für Ihr Heimkino, bietet dieser <strong>SAMSUNG GU32T5379CD</strong> nicht nur eine hervorragende Bildqualität, sondern auch vielfältige Anschlussmöglichkeiten und modernste Smart-TV-Funktionen.</p>","name_kurz":"SAMSUNG GU32T5379CD LED TV"},{"id":"fernseher_5","name":"HISENSE 85A6N LED TV (Flat, 85 Zoll / 214,78 cm, HDR 4K, SMART TV)","brand":"Hinsense","Artikelnummer":"2922652","img":"Fernseher_Bild_5.webp","preis":"1099,- €","preis_angebot":"","beschreibung":"<p>Erleben Sie das ultimative Heimkino-Erlebnis mit dem <strong>HISENSE 85A6N LED TV</strong> – einem beeindruckend großen 85 Zoll (214,78 cm) 4K UHD Fernseher, der mit einer Bildauflösung von 3.840 x 2.160 Pixeln und HDR-Technologie atemberaubende Farben und einen hohen Kontrast bietet.</p><p><strong>Technische Merkmale:</strong></p><ul><li><strong>Bildqualität:</strong> HDR 4K, 3.840 x 2.160 Pixel, HDR10, Dolby Vision, 60 Hz Bildwiederholfrequenz</li><li><strong>Bildverhältnis:</strong> 16:9</li><li><strong>Prozessor:</strong> Quad-Core</li><li><strong>Ton:</strong> 2.1 Kanal mit 50W Klangsystem</li><li><strong>Anschlüsse:</strong> 3x HDMI 2.1 (1x eARC), 2x USB 2.0, CI+, LAN, Kopfhörerausgang, S/PDIF Ausgang Audio</li><li><strong>SMART TV:</strong> Mit dem <strong>VIDAA</strong> Betriebssystem haben Sie Zugriff auf Streaming-Dienste wie Disney+, YouTube und Apple Music</li><li><strong>WLAN und Bluetooth:</strong> Ja</li><li><strong>Sprachsteuerung:</strong> Ja</li><li><strong>Besondere Merkmale:</strong> Game Mode Plus, 4K Upscaler, Precision Colour, Sprachsteuerung</li><li><strong>Farbe:</strong> Grau (TV), Schwarz (Standfuß)</li></ul><p><strong>Abmessungen:</strong></p><ul><li><strong>Ohne Standfuß:</strong> 189,2 cm (B) x 109,2 cm (H) x 10,2 cm (T)</li><li><strong>Mit Standfuß:</strong> 189,2 cm (B) x 118,2 cm (H) x 47,4 cm (T)</li><li><strong>Gewicht:</strong> 37,1 kg (mit Standfuß)</li></ul><p><strong>Energieverbrauch:</strong></p><ul><li><strong>Leistungsaufnahme in Ein-Zustand (SDR):</strong> 128 Watt</li><li><strong>Leistungsaufnahme in Ein-Zustand (HDR):</strong> 300 Watt</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>HISENSE 85A6N LED TV</li><li>Fernbedienung inkl. Batterien</li><li>Bedienungsanleitung</li></ul><p>Mit diesem HISENSE 85A6N LED TV genießen Sie nicht nur ein großes Display, sondern auch fortschrittliche Funktionen wie Sprachsteuerung, 4K Upscaling und umfangreiche Streaming-Dienste. Perfekt für Filmabende und Gaming in außergewöhnlicher Qualität.</p>","name_kurz":"HISENSE 85A6N LED TV"},{"id":"fernseher_6","name":"LG 43NANO81T6A NanoCell TV (Flat, 43 Zoll / 109 cm, UHD 4K, SMART TV, webOS 24 mit LG ThinQ)","brand":"LG","Artikelnummer":"2925339","img":"Fernseher_Bild_6.webp","preis":" 429,- €","preis_angebot":"","beschreibung":"<p>Genießen Sie brillante Farben und atemberaubende Bildqualität mit dem <strong>LG 43NANO81T6A NanoCell TV</strong>. Mit seiner NanoCell-Technologie und einer Auflösung von 3.840 x 2.160 Pixeln bietet dieser 43 Zoll (109 cm) Fernseher außergewöhnliche visuelle Erlebnisse.</p><p><strong>Technische Merkmale:</strong></p><ul><li><strong>Bildqualität:</strong> UHD 4K, HDR10, Dolby Vision, HDR10+, Hybrid Log-Gamma (HLG), 60 Hz Bildwiederholfrequenz</li><li><strong>Prozessor:</strong> α5 Gen7 4K AI-Prozessor</li><li><strong>SMART TV:</strong> Mit webOS 24 und zahlreichen Apps, einschließlich Streaming-Diensten wie Disney+, YouTube, Apple Music</li><li><strong>Bildverbesserung:</strong> HDR10 / HLG, Filmmaker Mode™ für kinogleiches Entertainment</li><li><strong>Ton:</strong> 2.0-Soundsystem, AI Sound Pro mit Virtual 9.1.2 Up-Mix und 20 Watt Musikleistung</li><li><strong>Gaming-Unterstützung:</strong> Optimierter Game Mode und HGiG-Unterstützung für realistische HDR-Darstellung</li><li><strong>Anschlüsse:</strong> 3x HDMI (eARC, ALLM), 2x USB 2.0, 1x LAN, Wi-Fi 5, Bluetooth 5.1</li><li><strong>Sprachsteuerung:</strong> Amazon Alexa, Google Assistant und Apple Home & Airplay2 kompatibel</li><li><strong>Farbe:</strong> Schwarz</li></ul><p><strong>Abmessungen:</strong></p><ul><li><strong>Ohne Standfuß:</strong> 96,7 cm (B) x 56,4 cm (H) x 5,77 cm (T)</li><li><strong>Mit Standfuß:</strong> 96,7 cm (B) x 62 cm (H) x 20 cm (T)</li><li><strong>Gewicht:</strong> 9,3 kg (mit Standfuß)</li></ul><p><strong>Energieverbrauch:</strong></p><ul><li>54 Watt (SDR)</li><li>84 Watt (HDR)</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>LG 43NANO81T6A NanoCell TV</li><li>Magic Remote Fernbedienung mit Batterien</li><li>Abnehmbares Stromkabel</li><li>Standfuß</li></ul><p>Der LG 43NANO81T6A bietet nicht nur hervorragende Bildqualität mit 4K UHD und HDR, sondern auch smarte Funktionen, die Ihnen die Bedienung durch die Integration von Sprachassistenten und das webOS Betriebssystem erleichtern.</p>","name_kurz":"LG 43NANO81T6A NanoCell TV"},{"id":"fernseher_7","name":"PEAQ PTV 32H-5024C LED TV (32 Zoll / 80 cm, HD-ready)","brand":"PEAQ","Artikelnummer":"2908332","img":"Fernseher_Bild_7.webp","preis":"129,- €","preis_angebot":"","beschreibung":"<p>Der PEAQ PTV 32H-5024C bietet Ihnen ein großartiges Fernseherlebnis in HD-ready Qualität auf einem 32 Zoll (80 cm) Bildschirm. Mit einer Bildschirmauflösung von 1.366 x 768 Pixeln erleben Sie klare und scharfe Bilder in einem kompakten Format.</p><p><strong>Technische Merkmale:</strong></p><ul><li><strong>Bildqualität:</strong> HD-ready, Direct LED Technologie, D-LED Hintergrundbeleuchtung</li><li><strong>Bildwiederholfrequenz:</strong> 60 Hz</li><li><strong>Empfangsarten:</strong> DVB-T2 HD, DVB-C, DVB-S, DVB-S2</li><li><strong>Prozessor:</strong> MSD3663</li><li><strong>Ton:</strong> Dolby Audio Klangsystem für klaren Sound</li><li><strong>Anschlüsse:</strong> 2x HDMI 1.4, 1x USB 2.0, 1x mini AV in, 1x CI, 1x Optical, 2x RF, 1x RJ-45</li><li><strong>Bildschirmgröße:</strong> 80 cm (32 Zoll)</li><li><strong>Kontrastverhältnis:</strong> 3000:1</li><li><strong>Helligkeit:</strong> 200 cd/m², Reaktionszeit 6,5 ms</li><li><strong>Besondere Merkmale:</strong> Hotel Mode, elektronische Programmzeitschrift (EPG), Kindersicherung</li></ul><p><strong>Abmessungen:</strong></p><ul><li><strong>Ohne Standfuß:</strong> 724 mm (B) x 425 mm (H) x 84 mm (T)</li><li><strong>Mit Standfuß:</strong> 724 mm (B) x 457 mm (H) x 195 mm (T)</li><li><strong>Gewicht:</strong> 4,2 kg (mit Standfuß)</li></ul><p><strong>Farbe:</strong> Schwarz, Standfuß ebenfalls schwarz</p><p><strong>Energieverbrauch:</strong></p><ul><li>26 Watt (SDR)</li><li>0,5 Watt im Bereitschaftszustand</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>PEAQ PTV 32H-5024C LED TV</li><li>Fernbedienung</li><li>2x AAA Batterien</li></ul><p>Der PEAQ PTV 32H-5024C ist der ideale Fernseher für kleine bis mittelgroße Räume und bietet Ihnen ein starkes Bild- und Klangerlebnis ohne unnötige Extras.</p>","name_kurz":"PEAQ PTV 32H-5024C LED TV"},{"id":"fernseher_8","name":"PHILIPS 32PFS6908/12 Full HD LED Ambilight TV (Flat, 32 Zoll / 80 cm, Full-HD, SMART TV, Ambilight, Philips Smart TV)","brand":"PHILIPS","Artikelnummer":"2869787","img":"Fernseher_Bild_8.webp","preis":"299,99 €","preis_angebot":"","beschreibung":"<p>Der PHILIPS 32PFS6908/12 bietet Ihnen ein atemberaubendes Fernseherlebnis mit 3-seitigem Ambilight und Full-HD-Auflösung. Mit seiner 32 Zoll (80 cm) Bildschirmdiagonale und einer Auflösung von 1920 x 1080 Pixeln genießen Sie gestochen scharfe Bilder und lebendige Farben. Dank der Ambilight-Technologie wird Ihr Fernseherlebnis um eine faszinierende Lichtatmosphäre erweitert.</p><p><strong>Technische Merkmale:</strong></p><ul><li><strong>Bildqualität:</strong> Full-HD, Pixel Plus HD, HDR10, HLG</li><li><strong>Bildwiederholfrequenz:</strong> 60 Hz</li><li><strong>Empfangsarten:</strong> DVB-T2 HD, DVB-C, DVB-S, DVB-S2</li><li><strong>Smart TV:</strong> Ja, mit Philips Smart TV Plattform</li><li><strong>HDR Unterstützung:</strong> HDR10, HLG, Dolby Vision</li><li><strong>Besondere Merkmale:</strong> 3-seitiges Ambilight, Eco Mode, Kindersicherung, automatische Senderprogrammierung</li><li><strong>Sprachsteuerung:</strong> Kompatibel mit Google Assistant und Amazon Alexa</li><li><strong>Ton:</strong> Dolby Digital mit 12 Watt RMS</li><li><strong>Anschlüsse:</strong> 3x HDMI 2.0, 2x USB, CI+, Ethernet-LAN, optischer Audio-Ausgang, Kopfhörerausgang</li></ul><p><strong>Abmessungen:</strong></p><ul><li><strong>Ohne Standfuß:</strong> 72.8 cm (B) x 43.3 cm (H) x 8.7 cm (T)</li><li><strong>Mit Standfuß:</strong> 72.8 cm (B) x 45.1 cm (H) x 17.7 cm (T)</li><li><strong>Gewicht:</strong> 4.7 kg (mit Standfuß)</li></ul><p><strong>Farbe:</strong> Anthrazit</p><p><strong>Energieverbrauch:</strong></p><ul><li>27 Watt im Standby</li><li>43 Watt im HDR-Modus</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>PHILIPS 32PFS6908/12 Full HD LED TV</li><li>Fernbedienung</li><li>2x AAA-Batterien</li><li>Standfuß</li><li>Netzkabel</li><li>Kurzanleitung und Broschüre mit rechtlichen und Sicherheitsinformationen</li></ul><p>Genießen Sie Filme, Serien und Spiele in neuer Dimension mit dem PHILIPS 32PFS6908/12, der Ihnen nicht nur ein klares Bild, sondern auch ein einzigartiges Lichtambiente durch Ambilight bietet.</p>","name_kurz":"PHILIPS 32PFS6908/12 Full HD LED Ambilight TV"},{"id":"fernseher_9","name":"PEAQ PTV 32GF-5024C 32\" FHD Google TV (Flat, 32 Zoll / 80 cm, Full-HD, SMART TV)","brand":"PEAQ","Artikelnummer":"2908615","img":"Fernseher_Bild_9.webp","preis":"177,- €","preis_angebot":"","beschreibung":"<p>Erleben Sie Fernsehen in einer neuen Dimension mit dem PEAQ PTV 32GF-5024C! Der 32 Zoll (80 cm) Full-HD-LED-TV bietet gestochen scharfe Bilder und lebendige Farben, unterstützt durch fortschrittliche HDR-Technologie wie HDR10, HLG, HDR10+ und Dolby Vision. Der integrierte Google TV Smart TV Betriebssystem ermöglicht einfachen Zugang zu allen wichtigen Streamingdiensten wie Netflix, Amazon Prime Video, Disney+ und YouTube.</p>","name_kurz":"PEAQ PTV 32GF-5024C FHD Google TV"},{"id":"fernseher_10","name":"SAMSUNG GU55DU7170U LED TV (Flat, 55 Zoll / 138 cm, UHD 4K, SMART TV, Tizen)","brand":"SAMSUNG","Artikelnummer":"2924382","img":"Fernseher_Bild_10.webp","preis":"519,- €","preis_angebot":"","beschreibung":"<p>Genießen Sie atemberaubende 4K-Auflösung mit dem SAMSUNG GU55DU7170U LED TV. Mit einer Bildschirmdiagonale von 55 Zoll (138 cm) und einer Auflösung von 3840 x 2160 Pixeln erleben Sie gestochen scharfe Bildqualität, unterstützt durch HDR10+ und HLG für lebendige Farben und Kontraste. Der Crystal Processor 4K optimiert Bildinhalte in Echtzeit, während UHD Dimming und Mega Contrast für beeindruckende Details in dunklen und hellen Szenen sorgen.</p><p>Dieser SMART TV nutzt das leistungsstarke Tizen Betriebssystem, das Ihnen Zugriff auf zahlreiche Apps und Streaming-Dienste wie Netflix, Amazon Prime Video und YouTube ermöglicht. Der integrierte Sprachassistent erleichtert die Bedienung und kann nahtlos in Ihr Smart Home integriert werden. Mit einer nativen Bildwiederholfrequenz von 50 Hz und Unterstützung für HDR10+ eignet sich der TV auch perfekt für Sportübertragungen und actionreiche Filme.</p><p>Dank 3 HDMI-Anschlüssen und integriertem WLAN ist der SAMSUNG GU55DU7170U bestens ausgestattet für Ihre Geräte und Streaming-Bedürfnisse. Sein elegantes Design in Titangrau und die VESA-Norm 200 x 200 mm ermöglichen eine flexible Wandmontage.</p><p><strong>Technische Merkmale:</strong></p><ul><li><strong>Bildqualität:</strong> 4K UHD (3840 x 2160 Pixel), HDR10+, HLG</li><li><strong>Prozessor:</strong> Crystal Processor 4K</li><li><strong>Bildverbesserung:</strong> UHD Dimming, Mega Contrast</li><li><strong>Bildwiederholfrequenz:</strong> 50 Hz</li><li><strong>Smart TV:</strong> Tizen OS mit Streaming-Apps und Sprachsteuerung</li><li><strong>Audio:</strong> 20 Watt RMS mit OTS Lite Klangsystem</li><li><strong>Anschlüsse:</strong> 3x HDMI, 1x USB, WLAN, Bluetooth</li><li><strong>VESA-Norm:</strong> 200 x 200 mm</li><li><strong>Farbe:</strong> Titangrau</li><li><strong>Energieeffizienzklasse:</strong> G</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>SAMSUNG GU55DU7170U LED TV</li><li>Fernbedienung</li><li>Netzkabel</li><li>Kurzanleitung</li></ul><p>Der SAMSUNG GU55DU7170U bietet ein erstklassiges Seherlebnis mit beeindruckender Bildqualität, smarten Funktionen und einem stilvollen Design – ideal für Filme, Sport und Streaming.</p>","name_kurz":"SAMSUNG GU55DU7170U LED TV","present":7},{"id":"fernseher_11","name":"SAMSUNG GU65DU7170U LED TV (Flat, 65 Zoll / 163 cm, UHD 4K, SMART TV, Tizen)","brand":"SAMSUNG","Artikelnummer":"2924383","img":"Fernseher_Bild_11.webp","preis":"649,- €","preis_angebot":"","beschreibung":"<p>Erleben Sie beeindruckende 4K-Bildqualität mit dem SAMSUNG GU65DU7170U. Der große 65 Zoll (163 cm) Bildschirm mit einer Auflösung von 3840 x 2160 Pixeln bietet gestochen scharfe Bilder und lebendige Farben. Dank HDR10+ und HLG genießen Sie starke Kontraste und detaillierte Helligkeitsabstufungen, während der Crystal Processor 4K Inhalte in Echtzeit optimiert. UHD Dimming und Mega Contrast verbessern zudem Schwarzwerte und Helligkeitsstufen für ein noch intensiveres Seherlebnis.</p><p>Der SMART TV läuft auf dem benutzerfreundlichen <strong>Tizen</strong> Betriebssystem und bietet Zugriff auf zahlreiche Streaming-Dienste wie Netflix, Amazon Prime Video und YouTube. Mit der integrierten Sprachsteuerung wird die Bedienung noch komfortabler. Der ALLM (Auto Game Mode) reduziert die Latenzzeiten für eine reaktionsschnelle Gaming-Erfahrung, während OTS Lite und 20 Watt RMS Musikleistung für satten Sound sorgen.</p><p>Dank 3 HDMI-Anschlüssen, 1 USB-Port, WLAN und Bluetooth lässt sich der TV flexibel mit anderen Geräten verbinden. Sein modernes Design in Titangrau passt perfekt in jedes Wohnzimmer, und die VESA-Norm 400 x 300 mm ermöglicht eine einfache Wandmontage.</p><p><strong>Technische Merkmale:</strong></p><ul><li><strong>Bildqualität:</strong> 4K UHD (3840 x 2160 Pixel), HDR10+, HLG</li><li><strong>Prozessor:</strong> Crystal Processor 4K</li><li><strong>Bildverbesserung:</strong> UHD Dimming, Mega Contrast</li><li><strong>Bildwiederholfrequenz:</strong> 50 Hz</li><li><strong>Smart TV:</strong> Tizen OS mit Streaming-Apps und Sprachsteuerung</li><li><strong>Gaming:</strong> ALLM (Auto Game Mode)</li><li><strong>Audio:</strong> 20 Watt RMS mit OTS Lite Klangsystem</li><li><strong>Anschlüsse:</strong> 3x HDMI, 1x USB, WLAN, Bluetooth</li><li><strong>VESA-Norm:</strong> 400 x 300 mm</li><li><strong>Farbe:</strong> Titangrau</li><li><strong>Energieeffizienzklasse:</strong> G</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>SAMSUNG GU65DU7170U LED TV</li><li>Fernbedienung</li><li>Netzkabel</li><li>Kurzanleitung</li></ul><p>Der SAMSUNG GU65DU7170U bietet eine perfekte Kombination aus brillanter Bildqualität, Smart-TV-Funktionen und modernem Design – ideal für Filme, Gaming und Streaming.</p>","name_kurz":"SAMSUNG GU65DU7170U LED TV"}]},{"name":"Laptop","icon":"category_laptop_icon.svg","present":[10,2],"produkte":[{"id":"laptop_1","name":"ACER Chromebook 317 (CB317-1H-C7H8), Chromebook, mit 17,3 Zoll Display, Intel® Celeron®,N5100 Prozessor, 4 GB RAM, 128 GB eMMC, Intel® UHD Graphics, Silber, Google Chrome OS","brand":"ACER","Artikelnummer":"2746370","img":"Laptop_Bild_1.webp","preis":"379,99 €","preis_angebot":"","beschreibung":"<p>Das ACER Chromebook 317 (CB317-1H-C7H8) ist der ideale Begleiter für Nutzer, die ein großes Display und zuverlässige Leistung benötigen. Mit einem beeindruckenden 17,3 Zoll Full-HD IPS-Display (1920 x 1080 Pixel) bietet das Chromebook eine gestochen scharfe Darstellung. Das Acer ComfyView-Display mit mattem Finish sorgt für eine angenehme Nutzung, ohne störende Spiegelungen. Angetrieben von einem Intel® Celeron® N5100 Prozessor mit bis zu 2,80 GHz und 4 GB LPDDR4X Arbeitsspeicher, ist das Chromebook ideal für den täglichen Einsatz, ob zum Surfen, Arbeiten oder Multimedia. Der 128 GB große eMMC-Speicher bietet ausreichend Platz für Ihre Dateien und Anwendungen. Mit einer Akkulaufzeit von bis zu 10 Stunden können Sie den ganzen Tag arbeiten oder genießen, ohne ständig nach einer Steckdose suchen zu müssen. Das Chromebook ist mit Google Chrome OS ausgestattet und bietet schnellen Zugang zu Apps und Webdiensten. Die Konnektivität ist durch WLAN 802.11 ax/ac/a/b/g/n, Bluetooth 5.0 und verschiedene USB-Anschlüsse (2x USB 3.2, 2x USB 3.1 Typ-C Gen. 1) hervorragend. Eine integrierte Webcam und ein Multi-Gesture Touchpad runden das Paket ab. Mit einem Gewicht von nur 2,2 kg und einer schlanken Bauweise ist das ACER Chromebook 317 auch ein praktischer und mobiler Begleiter. Perfekt für Einsteiger, Home- und Multimedia-Nutzer, die ein großes, praktisches Display und moderne Funktionen suchen.</p>","kommentare":[{"kommentator":"Max Mustermann","text":"Ganz guter Fernseher, schnelle Lieferung!","sterne":4},{"kommentator":"Anna Müller","text":"Tolles Bild, empfehlenswert!","sterne":5}],"name_kurz":"ACER Chromebook 317 (CB317-1H-C7H8)"},{"id":"laptop_2","name":"HP OMEN 16-wf1375ng, Gaming Notebook, mit 16,1 Zoll Display, Intel® Core™ i7,i7-14700HX Prozessor, 16 GB RAM, 512 GB SSD, NVIDIA GeForce RTX™ 4060, Shadow Black, Windows 11 Home (64 Bit)","brand":"HP","Artikelnummer":"2918387","img":"Laptop_Bild_2.webp","preis":"1479,- €","preis_angebot":"","beschreibung":"<p>Das HP OMEN 16-wf1375ng Gaming Notebook ist der perfekte Begleiter für leidenschaftliche Gamer und anspruchsvolle Nutzer. Mit einem beeindruckenden 16,1 Zoll Full-HD-Display (1920 x 1080 Pixel) und einer modernen, matten Bildschirmoberfläche bietet es klare und lebendige Grafiken, die jedes Spiel zu einem Erlebnis machen.<br>Angetrieben wird das Notebook von einem leistungsstarken Intel® Core™ i7-14700HX Prozessor mit bis zu 5,5 GHz Turbo-Taktfrequenz und 33 MB Intel Cache. In Kombination mit 16 GB DDR5 RAM und einer dedizierten NVIDIA GeForce RTX™ 4060 Grafikkarte mit 8 GB GDDR6-Speicher garantiert das Gerät eine flüssige Leistung und schnelle Reaktionszeiten – selbst bei anspruchsvollsten Spielen.<br>Mit einer schnellen 512 GB SSD bietet das HP OMEN 16 ausreichend Speicherplatz und blitzschnelle Ladezeiten für Betriebssystem und Spiele. Für eine nahtlose Konnektivität sorgt Wi-Fi 6E (802.11ax), Bluetooth 5.3 und eine Vielzahl von Anschlüssen, darunter USB 3.2, HDMI 2.1 und Thunderbolt 2. Das Gaming Notebook läuft auf Windows 11 Home (64 Bit) und bietet somit Zugang zu den neuesten Funktionen und Sicherheitsupdates.<br>Für Gamer, die unterwegs sind, bietet der Akku des HP OMEN 16 eine Laufzeit von bis zu 6,25 Stunden, sodass Sie auch unterwegs ungestört spielen können. Die integrierte Webcam und das Mikrofon ermöglichen eine einfache Kommunikation während des Spiels oder bei Videoanrufen.<br>Mit einem Gewicht von 2,39 kg und einem eleganten Shadow Black Gehäuse ist das Notebook sowohl leistungsstark als auch tragbar.<br>Das HP OMEN 16-wf1375ng Gaming Notebook ist die ideale Wahl für Gamer, die auf der Suche nach einem leistungsfähigen Gerät sind, das alles mitbringt, was sie für das ultimative Gaming-Erlebnis benötigen.</p>","name_kurz":"HP OMEN 16-wf1375ng"},{"id":"laptop_3","name":"LENOVO V15-IJL | 15,6\" | Intel N5100 | Quad-Core | 4 x 2.80 GHz | 16GB RAM | 512GB SSD | Win 11 Pro, Notebook, mit 15,6 Zoll Display, Intel® Celeron®,N5100 Prozessor, 16 GB RAM, 512 GB SSD, Intel® UHD Graphics, Schwarz, Windows 11 Pro (64 Bit)","brand":"LENOVO","Artikelnummer":"140260314","img":"Laptop_Bild_3.webp","preis":"499,- €","preis_angebot":"299,-€","beschreibung":"<p>Das LENOVO V15-IJL ist ein vielseitiges und leistungsstarkes Notebook, ideal für Business-Anwendungen und den täglichen Gebrauch. Mit seinem 15,6 Zoll Full-HD Display (1920 x 1080 Pixel) liefert es gestochen scharfe Bilder und eine klare Darstellung. Das verbaute TN-Panel bietet eine Helligkeit von 250 cd/m² und sorgt für eine zuverlässige Anzeigequalität.</p><p>Im Inneren arbeitet der effiziente Intel® Celeron® N5100 Quad-Core Prozessor mit einer Basisfrequenz von 1,10 GHz und einer Turbo-Taktfrequenz von bis zu 2,80 GHz. Kombiniert mit 16 GB DDR4 RAM ermöglicht das Notebook flüssiges Arbeiten, selbst bei mehreren offenen Anwendungen. Die Intel® UHD Graphics sorgt für eine solide Leistung bei alltäglichen Aufgaben und Multimedia-Anwendungen.</p><p>Die 512 GB SSD bietet schnelle Ladezeiten und ausreichend Speicherplatz für Programme und Dateien. Dank des schlanken Designs und des Verzichts auf ein optisches Laufwerk bleibt das Notebook kompakt und leicht transportierbar.</p><p><strong>Anschlussvielfalt und Konnektivität:</strong></p><ul><li>1x USB-C 3.0</li><li>1x USB-A 3.0</li><li>1x USB-A 2.0</li><li>1x HDMI 1.4b</li><li>1x Gb LAN</li><li>Kopfhörerausgang</li><li>WLAN: Wi-Fi 5 (802.11ac)</li><li>Bluetooth 5.1</li></ul><p>Das Windows 11 Pro Betriebssystem sorgt für eine intuitive Benutzerführung und eine sichere Arbeitsumgebung. Eine integrierte Webcam ermöglicht Videokonferenzen, während das Multi-Touchpad eine präzise Steuerung gewährleistet.</p><p><strong>Mobilität und Akkulaufzeit:</strong></p><ul><li>Bis zu 6 Stunden Akkulaufzeit</li><li>Gewicht: 1,70 kg</li><li>Abmessungen: 359,2 mm x 19,9 mm x 235,8 mm</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>LENOVO V15-IJL Notebook</li><li>Netzteil</li></ul><p>Das LENOVO V15-IJL überzeugt mit einer starken Ausstattung, hoher Mobilität und einem modernen Design – perfekt für Arbeit und Alltag.</p>","name_kurz":"LENOVO V15-IJL Laptop"},{"id":"laptop_4","name":"LENOVO Laptop 15,6\" | i5-13420H | 8 x 4.60 GHz | 24 GB | 1000 GB | intel UHD Grafik |, Notebook, mit 15,6 Zoll Display, Intel® Core™ i5,i5-13420H Prozessor, 24 GB RAM, 1000 GB SSD, Intel® UHD Graphics, Schwarz, Windows 11 (64 Bit)","brand":"LENOVO","Artikelnummer":"140406910","img":"Laptop_Bild_4.webp","preis":"729,- €","preis_angebot":"549,-€","beschreibung":"<p>LENOVO Laptop 15,6\" mit Intel® Core™ i5-13420H Prozessor, 24 GB RAM und einer riesigen 1000 GB SSD ist der ideale Begleiter für alle, die Leistung und Vielseitigkeit suchen. Ausgestattet mit einem Full-HD Display (1920 x 1080 Pixel) in einer 15,6 Zoll Diagonale, erleben Sie eine brillante Bildqualität und eine flüssige Darstellung für Ihre täglichen Aufgaben, Multimedia und mehr.<p>Intel® Core™ i5-13420H Prozessor mit einer Basisfrequenz von 2,10 GHz und einem Turbo Boost von bis zu 4,60 GHz sorgt für hervorragende Leistung, egal ob bei Office-Anwendungen oder anspruchsvollen Programmen.</p><p>Der 8-Kern-Prozessor, gepaart mit 24 GB DDR4 RAM, gewährleistet gleichzeitig eine hohe Rechenleistung und eine flüssige Multitasking-Erfahrung.</p><p>Dank der 1000 GB SSD haben Sie ausreichend Speicherplatz für all Ihre Daten und Anwendungen. Die schnelle SSD-Technologie sorgt zudem für schnelle Ladezeiten und einen zügigen Systemstart.</p><p>Für die Grafikverarbeitung ist das Notebook mit der Intel® UHD Graphics ausgestattet, die Ihnen grundlegende Grafikanwendungen sowie Videos und Multimedia-Inhalte in guter Qualität ermöglicht.</p><p>Das Notebook läuft auf Windows 11 (64 Bit) und bietet damit eine benutzerfreundliche und moderne Betriebssystemumgebung.</p><p>Die integrierte Webcamermöglicht Videokonferenzen oder Aufnahmen, und das Mikrofon sorgt für klare Audioübertragung.</p><p>Für eine breite Konnektivität verfügt das LENOVO Laptop über mehrere Anschlüsse, darunter USB 3.2, USB 2.0, USB-C, HDMI, und einen RJ45 LAN-Anschluss. Bluetooth ist ebenfalls integriert, sodass Sie kabellose Verbindungen zu anderen Geräten herstellen können.</p><p>Das schlanke und elegante Design des LENOVO Laptops in Schwarz macht es zu einem stilvollen Begleiter für unterwegs. Mit einem Gewicht von nur 1,70 kg und einer kompakten Größe von 359 mm x 20 mm x 236 mm ist es leicht und bequem zu transportieren.</p><strong>Lieferumfang:</strong><ul><li>LENOVO Laptop</li><li>Netzteil</li><li>Betriebsanleitung</li></ul>Ideal für Multimedia-Anwendungen, Arbeiten im Büro oder Studium – das LENOVO Laptop 15,6\" bietet Ihnen die Leistung, die Sie brauchen, kombiniert mit einem modernen Design.</p>","name_kurz":"LENOVO Laptop 15"},{"id":"laptop_5","name":"ACER Chromebook 314 (CB314-2HT-K74H), Chromebook, mit 14 Zoll Display Touchscreen, MediaTek MediaTek MT,MT8183 Prozessor, 4 GB RAM, 128 GB eMMC, Mediatek Mali-G72, Silber, Google Chrome OS","brand":"ACER","Artikelnummer":"2941223","img":"Laptop_Bild_5.webp","preis":"299,- €","preis_angebot":"","beschreibung":"<p>Erleben Sie eine mühelose Leistung und außergewöhnliche Benutzerfreundlichkeit mit dem ACER Chromebook 314. Ausgestattet mit einem 14 Zoll Full-HD Touchscreen (1920 x 1080), der mit Acer ComfyView-Technologie und einem mattierten IPS-Panel überzeugt, bietet dieses Chromebook eine klare und lebendige Bildqualität, die Ihre Augen schont. Der Touchscreen ermöglicht eine besonders komfortable Bedienung, ideal für den Alltag, Arbeit und Unterhaltung.</p><p>Unter der Haube sorgt der MediaTek MT8183 Prozessor mit 8 Kernen (bis zu 2,0 GHz) für eine effiziente Performance, während 4 GB LPDDR4X RAM eine reibungslose Multitasking-Erfahrung gewährleisten. Mit einer 128 GB eMMC-Speicherlösung bietet das Gerät ausreichend Platz für Ihre Dateien und Apps, wobei die Leistung durch die schnelle Reaktionszeit und Effizienz des Systems optimiert wird.</p><p>Die integrierte Mediatek Mali-G72 Grafikkarte stellt sicher, dass Sie auch grafisch anspruchsvollere Aufgaben problemlos bewältigen können, sei es beim Ansehen von Videos oder beim Bearbeiten von Fotos. Die leistungsstarken Stereo-Lautsprecher liefern einen klaren Sound, unterstützt durch ein integriertes Mikrofon für Ihre Videokonferenzen und Audioaufnahmen.</p><p>Das Google Chrome OS sorgt für ein schnelles, sicheres und einfaches Benutzererlebnis, das optimal für Webanwendungen und Cloud-Dienste geeignet ist. Mit einer Akku-Laufzeit von bis zu 15 Stunden bietet das Chromebook erstaunlich lange Nutzung ohne Nachladen – perfekt für den ganzen Tag unterwegs oder zu Hause.</p><p>Dank Bluetooth 4.2 und WLAN 802.11ac haben Sie jederzeit eine zuverlässige Verbindung, ob bei der Arbeit oder beim Streaming. Es bietet außerdem Zwei USB 2.0-Anschlüsse, darunter ein USB-C-Port und einen Audio-Anschluss für zusätzliche Flexibilität.</p><ul><li><strong>Abmessungen:</strong> 325,4 mm x 19,7 mm x 232 mm</li><li><strong>Gewicht:</strong> 1,5 kg</p><li><strong>Farbe:</strong> Silber</p></ul><strong>Lieferumfang:</strong><ul><li> ACER Chromebook 314</p><li> Netzteil</p><li> Kurzanleitung</p></ul>Ideal für den Einsteiger- oder Home-Bereich, das ACER Chromebook 314bietet Ihnen alles, was Sie brauchen – in einem schlanken und leichten Design.</p>","name_kurz":"ACER Chromebook 314 (CB314-2HT-K74H)"},{"id":"laptop_6","name":"ASUS VivoBook 17 X1704VA-AU393W, Notebook, mit 17,3 Zoll Display, Intel® Core™ i7,i7-1355U Prozessor, 16 GB RAM, 512 GB SSD, Intel® Iris® Xe, Quiet Blue, Windows 11 Home (64 Bit)","brand":"ASUS","Artikelnummer":"2915968","img":"Laptop_Bild_6.webp","preis":"729,- €","preis_angebot":"","beschreibung":"<p>Leistungsstarkes Notebook für Arbeit und Entertainment.</p><p>Das ASUS VivoBook 17 X1704VA-AU393W bietet erstklassige Performance und modernes Design. Mit Intel® Core™ i7-1355U Prozessor, 16 GB DDR4 RAM und 512 GB SSD ermöglicht es schnelles Multitasking. Windows 11 Home ist vorinstalliert.</p><p>Brillantes 17,3-Zoll Full-HD Display: 17,3-Zoll (43,9 cm) IPS-Display mit 1.920 x 1.080 Pixeln, LED-Hintergrundbeleuchtung und 250 cd/m² Helligkeit – ideal für Streaming und kreative Aufgaben.</p><p>Starke Leistung und schnelle Reaktionen: Intel® Core™ i7-1355U (bis zu 5,0 GHz, 10 Kerne) und Intel® Iris® Xe Grafik – perfekt für Bildbearbeitung, Multitasking und leichtes Gaming.</p><p>Vielseitige Konnektivität: 1x USB 3.2 Gen 1 Typ-C, 2x USB 3.2 Gen 1 Typ-A, 1x USB 2.0, HDMI 1.4, Wi-Fi 6 und Bluetooth 5.2.</p><p>Komfort und Mobilität: Nur 2,1 kg, 19,9 mm Höhe, QWERTZ-Tastatur mit Num-Pad und 50 Wh Akku für lange Laufzeiten.</p><p><strong>Lieferumfang:</strong></p><ul><li>ASUS VivoBook 17 X1704VA-AU393W</li><li>Netzteil und Netzkabel</li><li>Kurzanleitung</li></ul><p>Fazit: Leistungsstark, vielseitig und elegant – ideal für Beruf, Studium und Freizeit.</p>","name_kurz":"ASUS VivoBook 17 X1704VA-AU393W"},{"id":"laptop_7","name":"LENOVO V15-IJL | Laptop| 15,6\" | Intel N4500 2 x 2.80 GHz | 512 GB SSD | 16 GB, Notebook, mit 15,6 Zoll Display, Intel® Celeron®,N4500 Prozessor, 16 GB RAM, 512 GB SSD, Intel® UHD Graphics, Schwarz, Windows 11 (64 Bit)","brand":"LENOVO","Artikelnummer":"135239515","img":"Laptop_Bild_7.webp","preis":"539,- €","preis_angebot":"329,-€","beschreibung":"<p><strong>LENOVO V15-IJL – Vielseitiges Notebook für Alltag und Multimedia</strong></p><p>Das LENOVO V15-IJL bietet starke Leistung und Zuverlässigkeit für tägliche Aufgaben. Ausgestattet mit einem Intel® Celeron® N4500 Prozessor (bis zu 2,80 GHz), 16 GB DDR4 RAM und einer 512 GB SSD bietet es reibungsloses Multitasking. Windows 11 (64 Bit) ist vorinstalliert.</p><p>15,6-Zoll Full-HD Display: Das 15,6-Zoll (39,6 cm) Display überzeugt mit Full-HD-Qualität (1920x1080 Pixel) und klaren Bildern – perfekt für Videos und Office-Anwendungen.</p><p>Starke Performance für den Alltag: Intel® Celeron® N4500 Dual-Core-Prozessor (bis 2,80 GHz) und Intel® UHD Graphics ermöglichen flüssige Arbeitsabläufe und Multimedia-Genuss.</p><p>Umfangreiche Anschlussmöglichkeiten: 1x HDMI 1.4b, 1x USB-C 3.0, 1x USB-A 3.0, 1x USB-A 2.0, 1x LAN (Gigabit), 1x Klinke.</p><p>Leicht und Mobil: Schlankes Design (362 x 20 x 252 mm) und leichtes Gewicht (1,74 kg) – ideal für unterwegs.</p><p><strong>Lieferumfang:</strong> <ul><li> LENOVO V15-IJL Laptop</li><li> Cybernerds Anleitung</li></ul><p><strong>Fazit:</strong> Das LENOVO V15-IJL ist ein zuverlässiger Alltagsbegleiter – ideal für Multimedia, Studium und Office.</p></ul></p>","name_kurz":"LENOVO V15-IJL Laptop"},{"id":"laptop_8","name":"HP Laptop | 15,6 | Intel N4500 2 x 2,80 GHz | 16 GB RAM | 512 GB SSD |, Notebook, mit 15,6 Zoll Display, Intel® Celeron®, N4500 Prozessor, 16 GB RAM, 512 GB SSD, Intel® UHD Graphics, Schwarz, Windows 11 (64 Bit)","brand":"HP","Artikelnummer":"139636931","img":"Laptop_Bild_8.webp","preis":"549,- €","preis_angebot":"339,-€","beschreibung":"<p><strong>HP Laptop – Vielseitiges Notebook für Alltag und Multimedia</strong><p>Der HP Laptop mit 15,6 Zoll Full-HD-Display (39,6 cm) bietet starke Leistung für Multimedia und Office. Ausgestattet mit einem Intel® Celeron® N4500 Prozessor (bis zu 2,80 GHz), 16 GB DDR4 RAM und einer 512 GB SSD sorgt er für schnelles Multitasking und kurze Ladezeiten.</p><p>Klare Bilder und moderne Technik: 15,6 Zoll Full-HD-Display mit scharfer Bildqualität – perfekt für Streaming, Surfen und Arbeiten.</p><p>Vielseitige Anschlüsse: HDMI, 2x USB-A 3.2 Gen 1, 1x USB-C 3.0 mit DisplayPort 1.2, Card Reader und Bluetooth.</p><p>Windows 11 vorinstalliert: Modernes Betriebssystem, integrierte Webcam und Mikrofon – sofort startklar für Videocalls.</p><p>Leicht und mobil: Schlankes Design (358 x 20 x 242 mm), nur 1,74 kg Gewicht – ideal für unterwegs.</p><p><strong>Lieferumfang:</strong></p> <ul><li>Laptop</li><li>Netzteil</li><li>Betriebsanleitung</li></ul><p><strong>Fazit:</strong></p>Starke Performance und vielseitige Ausstattung – perfekt für Beruf, Studium und Freizeit.","name_kurz":"HP Laptop 15"},{"id":"laptop_9","name":"ASUS Vivobook Go 15 E510MA-EJ592WS, Laptop, mit 15,6 Zoll Display, Intel® Celeron®,N4020 Prozessor, 4 GB RAM, 128 GB eMMC, Intel® UHD 600, Blau, Windows 11 Home S-Modus (64 Bit)","brand":"ASUS","Artikelnummer":"2926206","img":"Laptop_Bild_9.webp","preis":"249,- €","preis_angebot":"","beschreibung":"<p>Der ASUS Vivobook Go 15 E510MA-EJ592WS ist der ideale Begleiter für den Alltag. Mit seinem 15,6 Zoll Full-HD Display (1920 x 1080 Pixel) bietet der Laptop eine klare und gestochen scharfe Bildqualität für Ihre täglichen Aufgaben, sei es beim Surfen, Streaming oder Arbeiten. Die LED-Hintergrundbeleuchtung sorgt dabei für eine optimale Sichtbarkeit bei verschiedenen Lichtverhältnissen.</p><p>Angetrieben wird der Laptop von einem leistungsstarken Intel® Celeron® N4020 Prozessor mit 2 Kernen, der eine Taktfrequenz von bis zu 2,8 GHz erreicht. Damit bewältigen Sie problemlos alle grundlegenden Anwendungen und Multitasking-Aufgaben. Mit 4 GB DDR4 RAM und einem 128 GB eMMC Speicher haben Sie genug Platz für Ihre Dateien und Programme. Die Intel® UHD Graphics 600 Grafikeinheit sorgt zudem für die nötige Performance bei einfachen grafischen Anwendungen.</p><p>Dank des Windows 11 Home S-Modus (64 Bit) profitieren Sie von einer modernen Benutzeroberfläche und erhöhter Sicherheit. Die Bluetooth 5.1 und Wi-Fi 5 (802.11ac) Funktionen ermöglichen eine schnelle und stabile drahtlose Verbindung, ideal für das Streamen von Medien oder Arbeiten im Homeoffice.</p><p>Das Gehäuse des Laptops ist in einem eleganten Blau gehalten und besticht durch ein schlankes Design mit den kompakten Abmessungen von 360.2 mm x 18.1 mm x 236.4 mm. Trotz der großen Bildschirmdiagonale wiegt das Gerät nur 1,57 kg und ist somit ein praktischer Begleiter für unterwegs.</p><p>Weitere Highlights sind die integrierte Webcam, das SonicMaster Lautsprechersystem für klaren Sound und die QWERTZ-Tastatur mit integriertem Num-Pad für komfortables Tippen. Der 42 Wh Akku sorgt für eine zuverlässige Stromversorgung und ermöglicht eine lange Nutzung ohne ständiges Nachladen.</p><p><strong>Lieferumfang:</strong><ul><li>ASUS Vivobook Go 15 E510MA-EJ592WS Laptop</li><li>Netzteil</li><li>Netzkabel</li><li>Kurzanleitung</li></ul></p><p>Ob für den täglichen Gebrauch, Online-Meetings oder das Surfen im Internet – der ASUS Vivobook Go 15 ist die perfekte Wahl für alle, die Leistung und Portabilität zu einem attraktiven Preis suchen.</p>","name_kurz":"ASUS Vivobook Go 15 E510MA-EJ592WS"},{"id":"laptop_10","name":"HP 250-G10 mit MS Office 2024 Pro Vollversion, Notebook, mit 15,6 Zoll Display, Intel® Core™ i5,1334U Prozessor, 16 GB RAM, 500 GB SSD, Intel® Iris® Xe, Silber, Windows 11 Pro (64 Bit)","brand":"HP","Artikelnummer":"147017333","img":"Laptop_Bild_10.webp","preis":"749,- €","preis_angebot":"599,- €","beschreibung":"<p>Das HP 250-G10 ist ein leistungsstarkes Notebook, das sich perfekt für Business-Anwendungen und den täglichen Gebrauch eignet. Ausgestattet mit einem 15,6 Zoll Full-HD Display (1920 x 1080 Pixel) bietet das IPS-Panel brillante Farben und eine klare Darstellung aus verschiedenen Blickwinkeln. Die hervorragende Bildqualität sorgt dafür, dass Sie Ihre Arbeit oder Multimedia-Inhalte in bester Auflösung genießen können.</p><p>Angetrieben wird das Notebook von einem Intel® Core™ i7-1355U Prozessor mit 10 Kernen und einer Turbo-Taktfrequenz von bis zu 5,00 GHz, was außergewöhnliche Performance für anspruchsvolle Anwendungen ermöglicht. Mit 16 GB DDR4 RAM und einer schnellen 500 GB SSD (M.2 via NVMe) haben Sie ausreichend Speicherplatz für Ihre Daten und eine blitzschnelle Leistung, die das Multitasking effizient gestaltet.</p><p>Die integrierte Intel® Iris® Xe Grafik sorgt für flüssige Darstellungen bei grafischen Anwendungen und Multimedia-Inhalten. Das Windows 11 Pro (64 Bit) Betriebssystem bietet eine moderne und sichere Arbeitsumgebung, die durch die MS Office 2024 Pro Vollversion (mit Word, Excel, PowerPoint, Outlook, OneNote, Access, Skype for Business) ergänzt wird. Sie erhalten eine vollständige Suite leistungsstarker Office-Tools, ideal für den professionellen Einsatz.</p><p>Mit einer Akkulaufzeit von bis zu 7 Stunden sind Sie auch unterwegs produktiv. Das Gerät ist mit einer deutschen QWERTZ-Tastatur ausgestattet, die über ein integriertes Num-Pad für eine bequeme Eingabe verfügt. Die integrierte Webcam und das Mikrofon ermöglichen es Ihnen, an Online-Meetings teilzunehmen, während das Multi-Touchpad für eine präzise und komfortable Steuerung sorgt.</p><p>Das elegante silberne Gehäuse aus robustem Kunststoff und das kompakte Design machen das Notebook sowohl im Büro als auch unterwegs zum idealen Begleiter. Mit einem Gewicht von nur 1,74 kg ist es leicht zu transportieren und bietet dabei eine hervorragende Leistung.</p><p><strong>Lieferumfang:</strong><ul><li>HP 250-G10 Notebook</li><li>Netzteil</li><li>Kurzanleitung</li></ul></p><p>Ob für Business-Anwendungen, kreative Projekte oder den alltäglichen Gebrauch – das HP 250-G10 bietet die perfekte Kombination aus Leistung, Funktionalität und Mobilität.</p>","name_kurz":"HP 250-G10 Laptop"},{"id":"laptop_11","name":"SAMSUNG Galaxy Book4, Notebook, mit 15,6 Zoll Display, Intel® Core™ 3,100U Prozessor, 8 GB RAM, 256 GB SSD, Intel® Core™ Onboard Graphics, Gray, Windows 11 Home (64 Bit)","brand":"SAMSUNG","Artikelnummer":"2915091","img":"Laptop_Bild_11.webp","preis":"759,99 €","preis_angebot":"","beschreibung":"<p>Das SAMSUNG Galaxy Book4 ist der perfekte Begleiter für alle, die ein leistungsstarkes Notebook in einem eleganten Design suchen. Ausgestattet mit einem 15,6 Zoll Full-HD Display (1.920 x 1.080 Pixel), das mit einer Helligkeit von 300 cd/m² eine klare Sicht bei verschiedenen Lichtverhältnissen bietet, ist es ideal für die Arbeit, das Studium oder die Unterhaltung. Das 16:9 Bildverhältnis und eine Bildwiederholrate von 60 Hz sorgen für eine angenehme und flüssige Anzeige.</p><p>Der Intel® Core™ i3-100U Prozessor mit bis zu 4,7 GHz und 10 MB Cache sorgt für eine hohe Performance bei täglichen Anwendungen und Multitasking. Mit 8 GB LPDDR4X RAM und einer schnellen 256 GB SSD haben Sie genügend Speicherplatz und blitzschnellen Zugriff auf Ihre Daten. Die Intel® Core™ Onboard Graphics bieten eine ausreichende Grafikleistung für Multimedia-Anwendungen und einfache Spiele.</p><p>Das Windows 11 Home (64 Bit) Betriebssystem garantiert eine moderne und benutzerfreundliche Oberfläche, während die zahlreichen Anschlussmöglichkeiten wie 2x USB Typ-C, 2x USB Typ-A, HDMI 2.1, 3,5 mm Klinke und RJ-45 für eine optimale Konnektivität sorgen. Der integrierte Micro-SD Kartenleser und das WLAN 802.11 a/b/g bieten zusätzliche Flexibilität für Ihre Datenverwaltung und kabellose Verbindung.</p><p>Mit einer Akkukapazität von 54 Wh können Sie das Notebook für lange Zeit nutzen, ohne nachladen zu müssen. Das integrierte Mikrofon und die Webcam ermöglichen mühelos Videoanrufe und Online-Meetings, während die QWERTZ-Tastatur eine komfortable und präzise Eingabe gewährleistet.</p><p>Das schlanke Gehäuse des Galaxy Book4 in Gray misst nur 15,4 mm in der Höhe und wiegt nur 1,55 kg, was es zu einem idealen, portablen Gerät für unterwegs macht.</p><p><strong>Lieferumfang:</strong><ul><li>SAMSUNG Galaxy Book4 Notebook</li><li>Akku (fest verbaut)</li><li>Ladeadapter (45 W)</li><li>Datenkabel (USB-C auf USB-C)</li><li>Kurzanleitung</li></ul></p><p>Das SAMSUNG Galaxy Book4 bietet Ihnen eine leistungsstarke und flexible Lösung für Arbeit, Studium und Freizeit in einem kompakten und modernen Design.</p>","name_kurz":"SAMSUNG Galaxy Book4"}]},{"name":"Handy","icon":"category_phone_icon.svg","present":[2,3],"produkte":[{"id":"phone_1","name":"XIAOMI Redmi Note 13 128 GB Midnight Black Dual SIM","brand":"XIAOMI","Artikelnummer":"2909790","img":"Phone_Bild_1.webp","preis":"199,90 €","preis_angebot":"129,- €","beschreibung":"<p><strong>XIAOMI Redmi Note 13</strong> in Midnight Black ist ein leistungsstarkes Smartphone, das mit einer Vielzahl an Funktionen und einem eleganten Design überzeugt. Ausgestattet mit einem 6,67 Zoll AMOLED Display (1.080 x 2.400 Pixel) und einer Bildwiederholrate von bis zu 240 Hz bietet es eine brillante Anzeige. Dank Corning® Gorilla® Glass® 3 ist das Display zudem besonders kratzfest und widerstandsfähig. Unter der Haube sorgt der Snapdragon® 685 Prozessor mit einer Taktfrequenz von bis zu 2,8 GHz (4x A73 + 4x A53) für eine schnelle und reibungslose Leistung, unterstützt von 6 GB RAM. Mit einer 128 GB Speicherkapazität und der Möglichkeit, eine Micro-SD-Karte mit bis zu 1 TB zu nutzen, haben Sie ausreichend Platz für Ihre Apps, Fotos und Dateien. Das Gerät unterstützt Dual SIM und eSim für noch mehr Flexibilität. Die Kameraausstattung des Redmi Note 13 ist beeindruckend: Die Triple Cam auf der Rückseite umfasst eine 108 Megapixel Hauptkamera, eine 8 Megapixel Ultraweitwinkelkamera und eine 2 Megapixel Makrokamera. Für Selfies und Videoanrufe steht eine 16 Megapixel Frontkamera zur Verfügung. Der integrierte Blitz und die Gesichtserkennung sorgen für eine komfortable Nutzung bei jedem Lichtverhältnis.</p> <p>In puncto Konnektivität bietet das Redmi Note 13 alles, was man von einem modernen Smartphone erwartet, darunter 5G, Bluetooth 5.2, WLAN, Near Field Communication (NFC) und diverse Schnellverbindungen wie USB Typ-C und 3,5 mm Klinke. Das IP54-zertifizierte Gehäuse schützt das Gerät vor Spritzwasser und Staub, sodass es auch in anspruchsvollen Umgebungen zuverlässig funktioniert. Das Smartphone wird von einem leistungsstarken 5.000 mAh Akku mit 33W Schnellaufladung betrieben, was eine lange Nutzungsdauer garantiert. Mit einem Gewicht von nur 188,5 g und den kompakten Abmessungen von 75,55 mm x 162,24 mm x 7,97 mm liegt es angenehm in der Hand und ist ideal für den täglichen Einsatz. Im Lieferumfang enthalten sind das Redmi Note 13, ein 33W-Netzteil, ein USB-C Ladekabel, ein SIM-Werkzeug, ein Benutzerhandbuch sowie eine Schutzhülle. Nachhaltigkeit wird beim XIAOMI Redmi Note 13 großgeschrieben: Es erfüllt die Kriterien der BetterWay Smartphones und zeichnet sich durch einen Reparaturindex von 8.2 aus, was es besonders reparaturfreundlich und nachhaltig macht. Mit dem XIAOMI Redmi Note 13 erhalten Sie ein Smartphone, das nicht nur leistungsstark, sondern auch robust, nachhaltig und voll ausgestattet ist.</p>","name_kurz":"XIAOMI Redmi Note 13","present":8},{"id":"phone_2","name":"MOTOROLA moto g34 5G 128 GB Charcoal Black Dual SIM","brand":"MOTOROLA","Artikelnummer":"2965124","img":"Phone_Bild_2.webp","preis":"169,- €","preis_angebot":"89,- €","beschreibung":"<p><strong>MOTOROLA moto g34 5G</strong> in der Farbe Charcoal Black ist ein leistungsstarkes und elegantes Smartphone, das mit modernster Technologie ausgestattet ist. Es läuft auf dem Android-Betriebssystem und wird von der Snapdragon® 695 5G-Mobile Platform angetrieben, die mit einer 2,2 GHz Octa-Core-Kryo™-560-CPU und einer 840 MHz Adreno™ 619 GPU für eine exzellente Performance sorgt. Mit 4 GB RAM und einer großzügigen 128 GB Speicherkapazität bietet das Gerät ausreichend Platz für Apps, Fotos und Videos, und dank des Micro-SD-Kartensteckplatzes können Sie den Speicher auf bis zu 1 TB erweitern. Zudem unterstützt das Gerät Dual SIM mit eSIM und Nano-SIM. Das 6,53 Zoll Display (16,59 cm) mit einer Auflösung von 1.600 x 720 Pixeln bietet eine klare Darstellung und ein optimales Nutzungserlebnis. Der Bildschirm im 20:9 Format sorgt für ein angenehmes visuelles Erlebnis beim Filme schauen, Spielen und Surfen.</p> </p>In puncto Kamera liefert das moto g34 5G mit seiner 50 Megapixel Dual-Kamera auf der Rückseite beeindruckende Fotos und Videos. Die 2 Megapixel Kamera ergänzt die Hauptkamera für optimale Bildaufnahmen. Für Selfies und Videotelefonate ist die 16 Megapixel Frontkamera ideal. Zusätzlich bieten die Kameras Gesichtserkennung und einen integrierten Blitz, um in jeder Situation klare und helle Bilder zu garantieren. Das Smartphone unterstützt 5G, Bluetooth 5.1, Near Field Communication (NFC) und ist mit einem USB Typ-C 2.0 Anschluss ausgestattet. Der 5.000 mAh Akku sorgt für eine lange Betriebsdauer und unterstützt die Schnellaufladung mit 20W. Das IP52-zertifizierte Gehäuse schützt das Gerät vor Spritzwasser und Staub, sodass Sie es auch unter anspruchsvollen Bedingungen verwenden können. Mit einem Gewicht von nur 179 g und den kompakten Maßen von 74,64 mm x 162,7 mm x 7,98 mm liegt es angenehm in der Hand und lässt sich leicht transportieren. Im Lieferumfang sind das moto g34 5G, ein 20W Ladegerät, ein USB-C-Kabel, ein Schutzcover, ein SIM-Toolkit und ein Quick-Start-Guide enthalten. Das MOTOROLA moto g34 5G ist das perfekte Smartphone für alle, die Wert auf Leistung, Kameraqualität und eine lange Akkulaufzeit legen.</p>","name_kurz":"MOTOROLA moto g34"},{"id":"phone_3","name":"ZTE Blade V60 Vita 256 GB Dark Blue Dual SIM","brand":"ZTE","Artikelnummer":"2929134","img":"Phone_Bild_3.webp","preis":"149,90 €","preis_angebot":"107,- €","beschreibung":"<p><strong>ZTE Blade V60 Vita 256 GB</strong> in der Farbe Dark Blue ist ein leistungsstarkes Smartphone, das mit dem neuesten Android 13 Betriebssystem und einem Octa-Core T606 Prozessor (2x Cortex-A75 @ 1.6GHz + 6x Cortex-A55 @1.6GHz) für eine herausragende Leistung sorgt. Mit einer großzügigen Speicherkapazität von 256 GB und der Möglichkeit, den Speicher mit einer Micro-SD-Karte bis zu 1 TB zu erweitern, haben Sie genügend Platz für all Ihre Daten und Anwendungen. Der 4 GB Arbeitsspeicher sorgt für eine reibungslose Nutzung. Das 6,6 Zoll HD+ Display (16,76 cm) mit einer Auflösung von 1.612 x 720 Pixeln und einem 20:9 Bildverhältnis bietet eine klare Darstellung und ein hervorragendes visuelles Erlebnis für Filme, Spiele und alltägliche Anwendungen. Die Triple-Kamera auf der Rückseite des ZTE Blade V60 Vita mit einer 50 Megapixel Hauptkamera und einer 2 Megapixel Kamera sowie einer AI Kamera sorgt für beeindruckende Fotos und Videos. Die 8 Megapixel Frontkamera ermöglicht großartige Selfies und Videoanrufe. Beide Kameras unterstützen Gesichtserkennung und sind mit einem integrierten Blitz ausgestattet. Das Smartphone unterstützt Dual SIM, 5G und bietet eine Bluetooth 5.2-Verbindung sowie die Nutzung von GPS und WLAN. Der 5000 mAh Akku garantiert eine lange Akkulaufzeit, während die USB 2.0 Typ-C-Schnittstelle für schnelles Laden sorgt. Das ZTE Blade V60 Vita ist mit einer IP52 Schutzart ausgestattet, was es spritzwassergeschützt macht. Mit seinen kompakten Maßen von 75,3 mm x 164,2 mm x 8,6 mm und einem Gewicht von 198 g ist es bequem in der Hand zu halten und einfach zu transportieren. Im Lieferumfang sind das ZTE Blade V60 Vita Smartphone, ein Ladekabel, Kopfhörer und eine Bedienungsanleitung enthalten.</p>","name_kurz":"ZTE Blade V60 Vita"},{"id":"phone_4","name":"SAMSUNG Galaxy A15 128 GB Schwarz Dual SIM","brand":"SAMSUNG","Artikelnummer":"136827402","img":"Phone_Bild_4.webp","preis":"196,99 €","preis_angebot":"180,03 €","beschreibung":"<p><strong>SAMSUNG Galaxy A15 128 GB</strong> in der Farbe Schwarz ist ein leistungsstarkes Smartphone mit dem neuesten Android 14 Betriebssystem und One UI Core 6.1. Ausgestattet mit einem Exynos 1330 Prozessor (2x 2.4 GHz + 6x 2.0 GHz) und 4 GB Arbeitsspeicher bietet es eine ausgezeichnete Performance für den täglichen Gebrauch. Mit einer großzügigen Speicherkapazität von 128 GB, die mit einer Micro-SD Karte bis zu 1.5 TB erweitert werden kann, haben Sie ausreichend Platz für Apps, Fotos und Videos. Das 6,7 Zoll Super AMOLED Display (16,91 cm) mit einer Full-HD+ Auflösung von 2.340 x 1.080 Pixeln und einer Bildwiederholrate von 90 Hz sorgt für ein klares und flüssiges visuelles Erlebnis. Die Triple-Kamera auf der Rückseite mit einer 50 Megapixel Hauptkamera, 5 Megapixel Ultraweitwinkelkamera und einer 2 Megapixel Makrokamera ermöglicht beeindruckende Fotos aus verschiedenen Perspektiven. Die Frontkamera mit 13 Megapixel sorgt für scharfe Selfies und Videoanrufe. Das SAMSUNG Galaxy A15 unterstützt Dual SIM, 5G und Bluetooth 5.3. Mit einem 5.000 mAh Akku und Schnellaufladung sind Sie immer für den Tag gerüstet. Der Akku kann mit einem USB-C Anschluss aufgeladen werden, der das USB Power Delivery Protokoll unterstützt, mit einer maximalen Ladegeschwindigkeit von 25 Watt. Das IP54-zertifizierte Gehäuse ist spritzwassergeschützt, sodass das Smartphone in verschiedenen Umgebungen sicher verwendet werden kann. Mit einem Gewicht von nur 200 g und kompakten Maßen von 77,9 mm x 164,4 mm x 7,9 mm liegt es angenehm in der Hand. Im Lieferumfang sind das SAMSUNG Galaxy A15 Smartphone, ein Akku (fest verbaut), Datenkabel (USB-C auf USB-C), ein Steckplatzwerkzeug und eine Kurzanleitung enthalten.</p>","name_kurz":"SAMSUNG Galaxy A15 128"},{"id":"phone_5","name":"SAMSUNG Galaxy S24 128 GB Marble Gray Dual SIM","brand":"SAMSUNG","Artikelnummer":"2912562","img":"Phone_Bild_5.webp","preis":"899,- €","preis_angebot":"639,- €","beschreibung":"<p><strong>SAMSUNG Galaxy S24 128 GB</strong> in der eleganten Farbe Marble Gray bietet Ihnen ein Premium-Erlebnis mit dem neuesten Android Betriebssystem und leistungsstarkem Exynos 2400 Prozessor (1x 3.2 GHz + 2x 2.9 GHz + 3x 2.6 GHz + 4x 1.95 GHz), unterstützt durch 8 GB RAM für eine reibungslose Performance. Das 6,2 Zoll Dynamic AMOLED Display (15,64 cm) bietet mit einer FHD+ Auflösung von 2.340 x 1.080 Pixeln eine gestochen scharfe Darstellung und unterstützt eine adaptive Bildwiederholfrequenz von bis zu 120 Hz für ein flüssiges Nutzererlebnis. Mit einer 50 Megapixel Hauptkamera, einem 12 Megapixel Ultra-Weitwinkelobjektiv und einem 10 Megapixel Teleobjektiv erhalten Sie beeindruckende Fotos und Videos. Die 12 Megapixel Frontkamera sorgt für klare Selfies und hochwertige Videoanrufe. Das SAMSUNG Galaxy S24 bietet Dual SIM und unterstützt 5G, sodass Sie schnell und zuverlässig verbunden bleiben können. Mit einem 4.000 mAh Akku, der Schnellaufladung und kabelloses Laden unterstützt, sind Sie immer bereit, den ganzen Tag lang aktiv zu bleiben. Das IP68-zertifizierte Gehäuse macht das Smartphone wasserdicht und staubgeschützt und bietet zusätzlichen Schutz vor den Elementen. Mit einem Gewicht von nur 167 g und kompakten Maßen von 70,6 mm x 147 mm x 7,6 mm liegt das Gerät bequem in der Hand. Im Lieferumfang enthalten sind das SAMSUNG Galaxy S24 Smartphone, ein SIM Steckplatzwerkzeug, ein USB Typ-C Kabel und eine Kurzanleitung.</p>","name_kurz":"SAMSUNG Galaxy S24"},{"id":"phone_6","name":"SAMSUNG Galaxy S24 Ultra 5G 256 GB Titanium Black Dual SIM","brand":"SAMSUNG","Artikelnummer":"2912578","img":"Phone_Bild_6.webp","preis":"1449,- €","preis_angebot":"1119,- €","beschreibung":"<p><strong>SAMSUNG Galaxy S24 Ultra 5G 256 GB</strong> in der stilvollen Farbe Titanium Black ist das ultimative Smartphone für Leistung, Fotografie und Technologie. Ausgestattet mit dem Snapdragon 8 Gen3 Prozessor (1x 3.39 GHz + 3x 3.1 GHz + 2x 2.9 GHz + 2x 2.2 GHz) und 12 GB RAM bietet es eine herausragende Performance für anspruchsvollste Aufgaben und Anwendungen. Das 6,8 Zoll Dynamic AMOLED Display (17,25 cm) mit QHD+ Auflösung von 3.120 x 1.440 Pixeln und einer Punktdichte von 505 ppi sorgt für brillante Farben und gestochen scharfe Details. Mit der adaptiven Bildwiederholrate von bis zu 120 Hz erleben Sie eine flüssige und reaktionsschnelle Anzeige. Für Fotografie-Enthusiasten bietet das Galaxy S24 Ultra eine beeindruckende 200 Megapixel Hauptkamera, die durch ein 12 Megapixel Ultra-Weitwinkelobjektiv, 50 Megapixel Teleobjektiv und ein weiteres 10 Megapixel Teleobjektiv ergänzt wird. Perfekte Fotos, auch bei schwierigen Lichtverhältnissen, sind garantiert. Die 12 Megapixel Frontkamera ermöglicht ebenfalls hochqualitative Selfies und Videotelefonate. Dank Dual SIM, 5G-Unterstützung und Bluetooth 5.3 sind Sie immer schnell und zuverlässig verbunden. Der 5.000 mAh Akku unterstützt Schnellaufladung (bis zu 45 Watt) sowie kabelloses Laden. Mit dem IP68 zertifizierten Gehäuse ist das Galaxy S24 Ultra vor Staub und Wasser geschützt und bietet zusätzliche Robustheit. Es ist ein ideales Gerät für all diejenigen, die auf Leistung, Design und innovative Technologie Wert legen. Im Lieferumfang enthalten sind das SAMSUNG Galaxy S24 Ultra Smartphone, ein SIM Steckplatzwerkzeug, ein USB Typ-C Kabel und eine Kurzanleitung.</p>","name_kurz":"SAMSUNG Galaxy S24 Ultra"},{"id":"phone_7","name":"SAMSUNG GALAXY S24 5G 256GB COBALT VIOLET 256 GB Cobalt Violet Dual SIM","brand":"SAMSUNG","Artikelnummer":"136494789","img":"Phone_Bild_7.webp","preis":"909,99 €","preis_angebot":"843,73 €","beschreibung":"<p><strong>SAMSUNG GALAXY S24 5G 256GB</strong> in Cobalt Violet ist das perfekte Smartphone für Nutzer, die Leistung, Stil und fortschrittliche Technologie vereinen möchten. Mit seinem eleganten Design in der einzigartigen Cobalt Violet Farbe zieht das Gerät alle Blicke auf sich und bietet gleichzeitig leistungsstarke Funktionen. Der Exynos 2400 Prozessor mit einer Taktrate von bis zu 3,2 GHz sowie 8 GB RAM sorgen für eine herausragende Leistung bei allen Aufgaben. Mit einer großzügigen 256 GB Speicherkapazität bietet das Gerät genügend Platz für Apps, Fotos und Videos, auch ohne die Möglichkeit für eine Erweiterung durch eine microSD-Karte. Das 6,2 Zoll Dynamic AMOLED Display liefert eine brillante FHD+ Auflösung von 2340 x 1080 Pixel und eine flüssige Bildwiederholrate von bis zu 120 Hz. Erleben Sie gestochen scharfe Bilder und eine beeindruckende Farbdarstellung – ideal für Filme, Spiele und alles dazwischen. Die Rückkamera des Galaxy S24 besteht aus einer 50 Megapixel Weitwinkelkamera, einer 12 Megapixel Ultra-Weitwinkelkamera und einem 10 Megapixel Teleobjektiv, die alle zusammen eine außergewöhnliche Fotoqualität bieten. Mit Funktionen wie optischem Zoom und 8K Videoaufnahme (30 fps) können Sie unglaubliche Details einfangen. Die 12 Megapixel Frontkamera sorgt für beeindruckende Selfies und klare Videoanrufe. Das Galaxy S24 unterstützt 5G für blitzschnelles mobiles Internet und bietet zudem alle wichtigen Anschlussmöglichkeiten wie Bluetooth 5.3, USB-C und WLAN. Die IP68-Zertifizierung macht es resistent gegen Staub und Wasser, sodass Sie es problemlos bei jedem Wetter nutzen können. Mit dem 4000 mAh Akku können Sie das Smartphone schnell aufladen und auch kabellos laden, was den Alltag noch bequemer macht. Die Software-Updates werden für mindestens 7 Jahre unterstützt, sodass Ihr Gerät stets aktuell bleibt. Im Lieferumfang enthalten sind das SAMSUNG GALAXY S24 Smartphone, ein SIM Steckplatzwerkzeug, ein USB Typ-C Kabel und eine Kurzanleitung.</p>","name_kurz":"SAMSUNG GALAXY S24"},{"id":"phone_8","name":"APPLE iPhone 16 Pro 5G 128 GB Titan Schwarz Dual SIM","brand":"APPLE","Artikelnummer":"2954309","img":"Phone_Bild_8.webp","preis":"1149,- €","preis_angebot":"","beschreibung":"<p><strong>APPLE iPhone 16 Pro 5G 128 GB Titan Schwarz</strong> setzt neue Maßstäbe in Leistung, Design und Funktionalität. Ausgestattet mit dem leistungsstarken A18 Pro Chip, der über eine 6-Core CPU, eine 6-Core GPU und eine 16-Core Neural Engine verfügt, bietet das iPhone 16 Pro herausragende Leistung, sei es bei anspruchsvollen Anwendungen, grafikintensiven Spielen oder beim Multitasking. Mit 128 GB internem Speicher haben Sie ausreichend Platz für Ihre Daten, Apps und Medien, ohne auf zusätzliche Speicherkarten angewiesen zu sein. Das 6,3 Zoll Super Retina XDR OLED Display sorgt für brillante, detailreiche Bilder mit einer Auflösung von 2.622 x 1.206 Pixeln und einer hohen Punktdichte von 460 ppi. Die Farben sind lebendig, die Schwarztöne tief, und die Bildwiederholrate von bis zu 120 Hz sorgt für flüssige Animationen und gestochen scharfe Darstellungen – ideal für Videos, Gaming und das Surfen im Internet. Die Triple-Kamera des iPhone 16 Pro ist mit einer 48 Megapixel Hauptkamera, einer 48 Megapixel Ultraweitwinkelkamera und einer 12 Megapixel Telekamera ausgestattet, die zusammen eine beeindruckende Fotoqualität bieten. Ob bei Porträts, Weitwinkelaufnahmen oder Zoom-Fotos, die Kamera liefert jedes Mal außergewöhnliche Ergebnisse. Der 5-fache optische Zoom und der 25-fache digitale Zoom bieten Ihnen außerdem mehr Flexibilität bei der Aufnahme von Detailaufnahmen. Mit Funktionen wie Nachtmodus, Panorama, Telelinse und Makro können Sie Ihre kreativen Ideen in atemberaubenden Bildern und Videos festhalten. Zudem unterstützt das iPhone 16 Pro die Aufnahme von 4K Dolby Vision Videos und bietet innovative Videoaufzeichnungsfunktionen wie den Kinomodus, den Actionmodus sowie Zeitlupen- und Zeitrafferaufnahmen. Mit 5G-Unterstützung erleben Sie blitzschnelles Surfen und Streaming, während Bluetooth 5.3, NFC und Wi-Fi sicherstellen, dass Sie immer schnell und zuverlässig mit Ihren Geräten und Netzwerken verbunden sind. Der IP68-Schutz des Gehäuses schützt das iPhone vor Staub und Wasser, sodass es auch bei widrigen Bedingungen einsatzbereit bleibt. Der Li-Ion Akku des iPhone 16 Pro sorgt für eine lange Nutzungsdauer und unterstützt Schnellaufladung sowie kabelloses Laden. Mit einer USB-C Schnittstelle und USB Power Delivery (PD) können Sie das iPhone schnell aufladen und es ist somit optimal für den Alltag und unterwegs geeignet. Das iPhone 16 Pro bietet nicht nur unglaubliche Leistung, sondern auch eine Vielzahl von Funktionen zur Verbesserung der Benutzererfahrung. Dazu gehören Face ID, der LiDAR Scanner für verbesserte Augmented Reality-Erlebnisse, und eine Reihe innovativer Funktionen zur Kamerasteuerung. Darüber hinaus verfügt das Gerät über wichtige Sicherheitsfunktionen wie Notruf SOS über Satellit und Unfallerkennung, die Ihnen im Notfall zusätzliche Sicherheit bieten. Im Lieferumfang enthalten sind das iPhone mit iOS 18, ein USB-C Ladekabel (1 m) und die Dokumentation. Das APPLE iPhone 16 Pro ist mit seiner herausragenden Leistung, der exzellenten Kamera und dem robusten Design eine ausgezeichnete Wahl für alle, die ein hochwertiges und leistungsstarkes Smartphone suchen.</p>","name_kurz":"APPLE iPhone 16 Pro"},{"id":"phone_9","name":"APPLE iPhone 16 Pro Max 5G 256 GB Titan Natur Dual SIM","brand":"APPLE","Artikelnummer":"2954333","img":"Phone_Bild_9.webp","preis":"1379,- €","preis_angebot":"","beschreibung":"<p><strong>APPLE iPhone 16 Pro Max 5G 256 GB Titan Natur Dual SIM</strong> – die perfekte Kombination aus außergewöhnlicher Leistung, beeindruckendem Design und modernster Technologie. Ausgestattet mit dem leistungsstarken A18 Pro Chip, einer neuen 6-Core CPU, einer 6-Core GPU und einer 16-Core Neural Engine, liefert das iPhone 16 Pro Max blitzschnelle Performance, die selbst anspruchsvollste Aufgaben mit Leichtigkeit bewältigt. Mit einer Speicherkapazität von 256 GB bietet das Smartphone reichlich Platz für Apps, Fotos, Videos und mehr. Das 6,9 Zoll Super Retina XDR OLED Display bietet mit einer Auflösung von 2.868 x 1.320 Pixeln atemberaubende Klarheit und brillante Farben, die für ein unvergleichliches visuelles Erlebnis sorgen. Die hohe Punktdichte von 460 ppi und die beeindruckende Farbdarstellung machen das Display ideal für Filme, Spiele und Fotografie. Die Triple-Kamera des iPhone 16 Pro Max besteht aus einer 48 Megapixel Hauptkamera, einer 48 Megapixel Ultraweitwinkelkamera und einer 12 Megapixel Telekamera. Diese leistungsstarken Kameras bieten eine Vielzahl von Funktionen, darunter bis zu 5x optischer Zoom und bis zu 25x digitaler Zoom, um in jeder Situation hochwertige Bilder und Videos zu liefern. Die Kamera unterstützt auch fortschrittliche Funktionen wie Nachtmodus, Porträtmodus, Ultraweitwinkel, Makroaufnahmen und Zeitraffer, sowie 4K Dolby Vision Videoaufnahmen mit verschiedenen Bildraten. Mit einer Dual SIM-Funktion, integriertem GPS, 5G-Unterstützung und Bluetooth 5.3 bleiben Sie immer verbunden. Der USB-C Anschluss sorgt für schnelle Datenübertragung und schnelles Laden mit einer maximalen Ladeleistung von 30 Watt. Zudem unterstützt das Gerät kabelloses Laden und bietet eine lange Akkulaufzeit. Das robuste Gehäuse aus Titan Natur und die IP68-Schutzart sorgen dafür, dass das iPhone 16 Pro Max auch den härtesten Bedingungen standhält und vor Staub und Wasser geschützt ist. Mit der neuesten Ceramic Shield Technologie auf der Vorderseite und einem matt texturierten Glas auf der Rückseite ist das Gerät nicht nur besonders widerstandsfähig, sondern auch ästhetisch ansprechend. Das iPhone 16 Pro Max bietet eine Vielzahl von innovativen Funktionen wie die Unfallerkennung, Notruf SOS über Satellit, Face ID und den LiDAR Scanner für erweiterte Augmented Reality-Erlebnisse. Zudem ist es mit iOS 18 ausgestattet, das Ihnen eine benutzerfreundliche und sichere Softwareerfahrung bietet. Der Lieferumfang umfasst das iPhone mit iOS 18, ein USB-C Ladekabel (1 m) und eine Dokumentation, sodass Sie sofort mit Ihrem neuen Smartphone loslegen können.</p>","name_kurz":"APPLE iPhone 16 Pro Max"},{"id":"phone_10","name":"HONOR X6B 128 GB Forest Green Dual SIM","brand":"HONOR","Artikelnummer":"2954081","img":"Phone_Bild_10.webp","preis":"149,- €","preis_angebot":"109,- €","beschreibung":"<p><strong>HONOR X6B 128 GB Forest Green Dual SIM</strong> – Ein Smartphone, das Leistung, Design und Funktionalität vereint. Ausgestattet mit dem leistungsstarken MediaTek Helio G85 Prozessor mit einer Taktfrequenz von 2x 2.0 GHz und 6x 1.8 GHz sorgt es für eine flüssige Leistung, die selbst bei anspruchsvolleren Anwendungen nicht ins Stocken gerät. Mit 128 GB interner Speicher und einem Micro-SD-Slot für erweiterbaren Speicher haben Sie genug Platz für all Ihre Daten, Fotos und Apps. Der 4 GB Arbeitsspeicher wird durch den innovativen RAM Turbo auf 8 GB erweitert und sorgt für eine noch schnellere und reibungslosere Nutzung. Das 6,56 Zoll LCD-Display mit einer Auflösung von 1.612 x 720 Pixeln liefert klare und lebendige Bilder. Mit einer Punktdichte von 269 ppi und einer breiten Farbwiedergabe können Sie Ihre Inhalte mit einer hohen Detailtreue genießen. Die 50 Megapixel Rückkamera mit einer 2 Megapixel Tiefenkamera ermöglicht es Ihnen, beeindruckende Fotos und Videos aufzunehmen. Mit der Frontkamera mit 5 Megapixeln können Sie sich in bester Qualität selbst in Szene setzen. Ein integrierter Blitz sorgt für bessere Aufnahmen bei schlechten Lichtverhältnissen. Das HONOR X6B unterstützt Dual SIM und bietet 4G (LTE) sowie 5G Unterstützung für schnelle mobile Daten. Mit Bluetooth 5.1 und einem USB Typ-C Anschluss sind Sie bestens für die Verbindung mit anderen Geräten ausgestattet. Zusätzlich ist auch ein 3,5 mm Klinkenanschluss vorhanden, sodass Sie Ihre Kopfhörer ohne Adapter verwenden können. Mit einer 5200 mAh Batterie bietet das HONOR X6B eine langanhaltende Akkulaufzeit, die Sie durch den Tag begleitet. Dank der Schnellaufladung ist das Smartphone in kürzester Zeit wieder einsatzbereit. Das elegante Gehäuse in der Farbe Forest Green und das kompakte Design mit einer Breite von 75,33 mm und einer Höhe von 163,59 mm sorgen dafür, dass das Gerät nicht nur leistungsstark, sondern auch ästhetisch ansprechend ist. Das Smartphone wiegt lediglich 192 g, sodass es bequem in der Hand liegt. Lieferumfang: Smartphone, Ladekabel, Bedienungsanleitung. Das HONOR X6B kommt mit dem Betriebssystem Android 14 und ist mit den neuesten Funktionen ausgestattet, um Ihnen ein optimales Nutzungserlebnis zu bieten.</p>","name_kurz":"HONOR X6B"},{"id":"phone_11","name":"HUAWEI P SMART 2019 SAPPHIRE BLUE 64 GB Sapphire Blue Dual SIM","brand":"HUAWEI","Artikelnummer":"99920322","img":"Phone_Bild_11.webp","preis":"399,- €","preis_angebot":"","beschreibung":"<p><strong>HUAWEI P SMART 2019 SAPPHIRE BLUE 64 GB</strong> – Ein leistungsstarkes und elegantes Smartphone in der edlen Farbe Sapphire Blue, das Ihnen mit seinem Kirin 710 Prozessor und einer Taktfrequenz von 2,2 GHz eine schnelle und flüssige Leistung bietet. Mit 64 GB internem Speicher und der Möglichkeit, den Speicher mit einer Micro-SD-Karte auf bis zu 512 GB zu erweitern, haben Sie genügend Platz für Ihre Apps, Fotos und Videos. Der 3 GB Arbeitsspeicher sorgt für eine zuverlässige Nutzung. Das 6,21 Zoll TFT LCD Display bietet mit einer Auflösung von 2.340 x 1.080 Pixeln ein gestochen scharfes Bild. Dank der Punktdichte von 415 ppi können Sie Filme, Fotos und mehr in beeindruckender Klarheit genießen. Der kapazitive Touchscreen ermöglicht eine einfache und präzise Bedienung. Die 13 Megapixel Dual-Rückkamera mit einer zusätzlichen 2 Megapixel Kamera ermöglicht Ihnen, scharfe und detailreiche Fotos zu schießen. Die 8 Megapixel Frontkamera sorgt für klare Selbstporträts und unterstützt die Gesichtserkennung für eine sichere Entsperrung des Geräts. Mit einer 3400 mAh Batterie genießen Sie eine lange Akkulaufzeit, sodass Sie den ganzen Tag mit dem HUAWEI P SMART 2019 verbunden bleiben können. Die Schnellladefunktion sorgt dafür, dass das Smartphone in kürzester Zeit wieder einsatzbereit ist. Das Smartphone unterstützt Dual SIM, was es ideal für den Einsatz mit zwei verschiedenen Telefonnummern oder für Reisen ins Ausland macht. Es bietet außerdem Near Field Communication (NFC) und verfügt über einen USB 2.0 Anschluss sowie einen 3,5 mm Klinkenanschluss für Ihre Kopfhörer. Mit einer kompakten Größe von 73,4 mm Breite und 155,2 mm Höhe liegt das Gerät angenehm in der Hand. Das Gewicht von nur 160 g sorgt für zusätzlichen Komfort. Der Lieferumfang des HUAWEI P SMART 2019 umfasst das Smartphone, einen Akku, ein Ladegerät, Kopfhörer, USB Kabel, SIM Werkzeug und eine Kurzanleitung. Das Gerät ist als wiederaufbereitetes Gerät verfügbar und bietet Ihnen dieselbe Qualität wie ein neues Gerät, jedoch zu einem günstigeren Preis. Mit der Android 9.0 Version und der benutzerfreundlichen EMUI 9.1-Oberfläche ist das HUAWEI P SMART 2019 das ideale Smartphone für den täglichen Gebrauch.</p>","name_kurz":"HUAWEI P SMART"}]},{"name":"Kopfhörer","icon":"category_headphones_icon.svg","present":[7,4],"produkte":[{"id":"headphone_1","name":"SHOKZ OpenSwim Pro, MP3, Open-ear Kopfhörer Bluetooth Grau","brand":"SHOKZ","Artikelnummer":"2937955","img":"Headphone_Bild_1.webp","preis":"162,99 €","preis_angebot":"","beschreibung":"<p>Die SHOKZ OpenSwim Pro, MP3, Open-ear Kopfhörer Bluetooth Grau bieten ein herausragendes Hörerlebnis für alle, die Musik, Podcasts oder Anrufe während sportlicher Aktivitäten oder beim Schwimmen genießen möchten. Diese Open-ear Kopfhörer sorgen für eine sichere und bequeme Passform, da sie das Ohr nicht vollständig umschließen und so die Umgebungsgeräusche nicht vollständig blockieren. Dies macht sie besonders ideal für den Outdoor-Einsatz, beim Sport oder im Schwimmbad. Die Kopfhörer bieten eine Bluetooth 5.4 Verbindung mit einer Reichweite von bis zu 10 Metern, sodass Sie sich beim Hören frei bewegen können, ohne sich Gedanken über Verbindungsabbrüche machen zu müssen. Mit Unterstützung der Audio-Codecs AAC und SBC liefert der Kopfhörer eine ausgezeichnete Klangqualität, die den Frequenzbereich von 20 Hz bis 20.000 Hz abdeckt. Die Batterie mit einer Kapazität von 160 mAh ermöglicht eine beeindruckende Betriebsdauer von bis zu 9 Stunden, was besonders für längere Trainingseinheiten oder lange Strecken von Vorteil ist. Der Akku ist wiederaufladbar und lässt sich in nur 90 Minuten über den USB-C Anschluss schnell aufladen. Dank der IP68 Schutzart sind die SHOKZ OpenSwim Pro spritzwassergeschützt und sogar für das Schwimmen geeignet, da sie auch in nassen Umgebungen zuverlässig funktionieren. Die integrierte Mikrofon ermöglicht es, Anrufe entgegenzunehmen oder Sprachbefehle zu geben, ohne das Gerät in die Hand nehmen zu müssen. Im Lieferumfang enthalten sind neben den Kopfhörern ein 4-poliges, magnetisches Ladekabel, Schwimm-Ohrstöpsel für sicheren Halt im Wasser, ein Etui aus Silikonkautschuk und eine Gebrauchsanweisung. Mit einem Gewicht von nur 27,3 g bieten diese Kopfhörer hohen Tragekomfort und ein angenehmes, fast unmerkliches Tragegefühl, das auch bei längeren Einsätzen nicht stört. Das moderne Design in Grau macht die Kopfhörer zudem zu einem stylischen Begleiter für jedes Training. Die SHOKZ OpenSwim Pro sind mit einer Software Update-Richtlinie ausgestattet und erhalten für mindestens 2 Jahre nach dem Kauf regelmäßige Updates, um sicherzustellen, dass die Leistung auf dem neuesten Stand bleibt. Erleben Sie den Unterschied mit den SHOKZ OpenSwim Pro und genießen Sie Musik und Anrufe in außergewöhnlicher Qualität, jederzeit und überall!</p>","name_kurz":"SHOKZ OpenSwim Pro"},{"id":"headphone_2","name":"DYSON OnTrac, Over-ear Kopfhörer Bluetooth Gelb/Aluminium","brand":"DYSON","Artikelnummer":"2944532","img":"Headphone_Bild_2.webp","preis":"499,- €","preis_angebot":"","beschreibung":"<p>Die DYSON OnTrac Over-ear Kopfhörer bieten aktives Noise Cancelling (ANC), einen Frequenzgang von 6 Hz bis 21.000 Hz, Bluetooth 5.0, eine maximale Betriebsdauer von bis zu 55 Stunden, USB-C-Schnellladung und sind spritzwassergeschützt. Mit der MyDyson App kompatibel und einem modernen Design in Gelb/Aluminium, bieten sie herausragenden Klang und Komfort. Inklusive Slimline Case und USB-C Ladekabel.</p>","name_kurz":"DYSON OnTrac"},{"id":"headphone_3","name":"SONY WH-CH720N, Over-ear Kopfhörer Bluetooth Black","brand":"SONY","Artikelnummer":"2863188","img":"Headphone_Bild_3.webp","preis":"74,99 €","preis_angebot":"","beschreibung":"<p>Die SONY WH-CH720N Over-ear Kopfhörer in elegantem Schwarz bieten herausragenden Klang mit aktivem Noise Cancelling (ANC), einem Frequenzgang von 7 Hz bis 20.000 Hz und der verbesserten DSEE-Technologie sowie 360 Reality Audio für ein immersives Hörerlebnis. Mit einer maximalen Betriebsdauer von bis zu 50 Stunden ohne ANC und 35 Stunden mit aktiviertem ANC können Sie stundenlang Musik genießen. Dank der Schnellladefunktion reichen bereits 3 Minuten Ladezeit für eine Stunde Musikgenuss. Diese kabellosen Bluetooth-Kopfhörer bieten zudem Adaptive Sound Control und eine USB-C-Ladeoption für schnellen Komfort. Im Lieferumfang enthalten sind Kopfhörer, Verbindungskabel, USB-Kabel und ein Referenzhandbuch.</p>","name_kurz":"SONY WH-CH720N"},{"id":"headphone_4","name":"JBL Tune 510 BT, On-ear Kopfhörer Schwarz","brand":"JBL","Artikelnummer":"2703151","img":"Headphone_Bild_4.webp","preis":"33,- €","preis_angebot":"","beschreibung":"<p>Die JBL Tune 510 BT On-ear Kopfhörer in Schwarz bieten kabellosen Komfort und beeindruckenden Klang. Mit einem Frequenzgang von 20-20.000 Hz und JBL Pure Bass Sound genießen Sie klaren und kraftvollen Sound. Die Kopfhörer bieten eine maximale Betriebsdauer von 40 Stunden und eine Schnellladefunktion, bei der bereits 5 Minuten Ladezeit für 2 Stunden Musikgenuss ausreichen. Mit der Bluetooth 5.0 Verbindung und der Unterstützung von A2DP, AVRCP und HFP können Sie Ihre Geräte mühelos verbinden. Die Kopfhörer sind faltbar, leicht (160 g) und werden mit einem USB-C-Ladekabel sowie einer Kurzanleitung geliefert.</p>","name_kurz":"JBL Tune 510 BT"},{"id":"headphone_5","name":"SHOKZ OpenFit, In-ear Kopfhörer Bluetooth Schwarz","brand":"SHOKZ","Artikelnummer":"2880252","img":"Headphone_Bild_5.webp","preis":"152,99 €","preis_angebot":"","beschreibung":"<p>Die SHOKZ OpenFit In-ear Kopfhörer in Schwarz bieten kabellosen Hörgenuss mit exzellenter Klangqualität und einer Reichweite von bis zu 10 m. Mit einem Frequenzgang von 50 - 16.000 Hz und Dual-Mikrofon-Technologie, die AI-Algorithmen enthält, bieten diese Kopfhörer klare Anrufe und einen hervorragenden Sound. Sie bieten eine Betriebsdauer von bis zu 7 Stunden und eine Stand-by-Zeit von 10 Tagen. Mit Bluetooth 5.2 und A2DP, AVRCP, HSP und HFP können Sie Ihre Geräte einfach verbinden. Das spritzwassergeschützte Design (IP54) macht sie ideal für Sport und Outdoor-Aktivitäten. Die Kopfhörer werden mit einem Ladecase und einem USB-C Ladekabel geliefert, das eine Ladezeit von nur 60 Minuten ermöglicht. Mit einer zusätzlichen Multi-Point-Funktion über ein Shokz App-Update.</p>","name_kurz":"SHOKZ OpenFit"},{"id":"headphone_6","name":"XIAOMI Redmi Buds 6 Lite, In-ear Kopfhörer Bluetooth White","brand":"XIAOMI","Artikelnummer":"2951666","img":"Headphone_Bild_6.webp","preis":"19,99 €","preis_angebot":"","beschreibung":"<p>Die XIAOMI Redmi Buds 6 Lite In-ear Kopfhörer in Weiß bieten herausragenden Klang und eine intelligente Soundverarbeitung für optimales Hörerlebnis. Mit Bluetooth 5.3 und einer Reichweite von bis zu 10 m können Sie Ihre Geräte kabellos verbinden. Die Kopfhörer unterstützen auch Kabelverbindung und sind mit iOS und Android kompatibel. Der integrierte ANC-Modus sorgt für eine aktive Geräuschunterdrückung, sodass Sie in Ruhe hören können. Der Soundmodus bietet vier verschiedene Klangeffekte, die per App angepasst werden können. Die Kopfhörer bieten eine Betriebsdauer von bis zu 36 Stunden und eine Sprechzeit von bis zu 7 Stunden. Der Akku ist in 2 Stunden wieder aufgeladen, und das kompakte Ladecase (480 mAh) ermöglicht lange Nutzung. Mit einem Gewicht von nur 4 g pro Ohrhörer und einem Gesamtgewicht von 39,6 g sind sie leicht und bequem zu tragen. Im Lieferumfang enthalten sind die Kopfhörer, das Ladecase, Silikon-Ohrstöpsel in den Größen S, M, L sowie eine Bedienungsanleitung.</p>","name_kurz":"XIAOMI Redmi Buds 6 Lite"},{"id":"headphone_7","name":"SONY WH-CH520, On-ear Kopfhörer Bluetooth Black","brand":"SONY","Artikelnummer":"2863180","img":"Headphone_Bild_7.webp","preis":"34,99 €","preis_angebot":"","beschreibung":"<p>Die SONY WH-CH520 On-ear Kopfhörer in Schwarz bieten außergewöhnlichen Klang und Komfort. Mit Bluetooth 5.2 und Multipoint-Verbindung können Sie zwei Geräte gleichzeitig verbinden. Dank der integrierten Headset-Funktion können Sie freihändig telefonieren und das omnidirektionale Mikrofon sorgt für klare Kommunikation. Die Kopfhörer bieten eine beeindruckende Betriebsdauer von bis zu 50 Stunden und sind mit einer schnellen Ladefunktion ausgestattet – nur 3 Minuten Ladezeit für 1,5 Stunden Musikgenuss und 10 Minuten für 5,5 Stunden. 360 Reality Audio und DSEE Sound verbessern das Hörerlebnis zusätzlich. Die Kopfhörer bieten außerdem die Fast Pair-Technologie für Android und Swift Pair für Windows, sodass die Kopfhörer schnell und einfach mit Ihren Geräten verbunden werden können. Mit einem verstellbaren Kopfbügel und weichen Ohrpolstern sorgen die Kopfhörer für langanhaltenden Tragekomfort. Im Lieferumfang enthalten sind die Kopfhörer, ein USB-Kabel und ein Referenzhandbuch.</p>","name_kurz":"SONY WH-CH520","present":9},{"id":"headphone_8","name":"PHILIPS TAT1209BK TWS, In-ear Kopfhörer Bluetooth Schwarz","brand":"PHILIPS","Artikelnummer":"2920162","img":"Headphone_Bild_8.webp","preis":"19,99 €","preis_angebot":"","beschreibung":"<p>Die PHILIPS TAT1209BK TWS In-ear Kopfhörer bieten beeindruckenden Klang in einem kompakten, kabellosen Design. Mit Bluetooth 5.3 und der True-Wireless-Technologie genießen Sie Freiheit bei der Musikwiedergabe. Dank der 16-Ohm-Impedanz und einer Empfindlichkeit von 97 dB bieten die Kopfhörer einen klaren und ausgewogenen Klang über den Frequenzbereich von 20 Hz bis 20 kHz. Sie sind spritzwassergeschützt und bieten eine maximale Betriebsdauer von bis zu 18 Stunden, einschließlich der Laufzeit des Ladecases. Das Ladecase hat eine Akkukapazität von 300 mAh und kann die Kopfhörer schnell aufladen (Ladezeit: 2 Stunden). Die Kopfhörer unterstützen kabelloses Laden und verfügen über einen USB-C-Anschluss für schnelle Ladegeschwindigkeiten. Sie sind mit Amazon Alexa und Google Assistant kompatibel, sodass Sie Ihre Musik per Sprachbefehl steuern können. Der Lieferumfang umfasst die Kopfhörer, ein USB-C-Ladekabel, eine Ladetasche sowie 3 Paar Ohrstöpsel in verschiedenen Größen (S, M, L) für optimalen Komfort.</p>","name_kurz":"PHILIPS TAT1209BK TWS"},{"id":"headphone_9","name":"APPLE AirPods Max, Over-ear Kopfhörer Bluetooth Mitternacht","brand":"APPLE","Artikelnummer":"2954319","img":"Headphone_Bild_9.webp","preis":"555,- €","preis_angebot":"","beschreibung":"<p>Die APPLE AirPods Max in der Farbe Mitternacht bieten außergewöhnlichen Klang und innovative Funktionen in einem eleganten Design. Mit der Over-ear-Tragevariante und aktiver Geräuschunterdrückung (ANC) erleben Sie Musik in höchster Qualität. Die Kopfhörer sind für iPhone-, iPad-, Mac-, Apple Watch- und Apple TV-Modelle optimiert und bieten auch mit anderen Bluetooth-Geräten eine stabile Verbindung. Die Digital Crown ermöglicht eine präzise Lautstärkeregelung sowie die Steuerung von Medien und Anrufen. Mit der 20 Stunden langen Akkulaufzeit bei aktiver Geräuschunterdrückung und 3D-Audio können Sie den ganzen Tag über Musik hören oder Anrufe tätigen. Die AirPods Max unterstützen das Laden über USB-C und bieten eine schnelle Ladefunktion für eine verlängerte Nutzung. Im Lieferumfang enthalten sind die AirPods Max, ein Smart Case, ein USB-C Ladekabel und Dokumentation. Mit Funktionen wie „Live-Mithören“ und Anpassungen für barrierefreies Hören bieten die AirPods Max auch Bedienhilfen für Menschen mit Behinderungen. Der perfekte Kopfhörer für Ihre Apple-Geräte.</p>","name_kurz":"APPLE AirPods Max"},{"id":"headphone_10","name":"APPLE AirPods Pro (2. Generation) mit MagSafe Case (USB‑C), In-ear Kopfhörer Bluetooth White","brand":"APPLE","Artikelnummer":"2897990","img":"Headphone_Bild_10.webp","preis":"255,- €","preis_angebot":"","beschreibung":"<p>Die APPLE AirPods Pro (2. Generation) bieten herausragenden Klang und innovatives Design in einem kompakten In-ear-Format. Mit aktivem Noise Cancelling (ANC) und personalisiertem 3D-Audio genießen Sie kristallklaren Sound und ungestörte Hörmomente. Diese Kopfhörer sind für alle Apple-Geräte mit der neuesten Software-Version optimiert, einschließlich iPhone, iPad, Apple Watch und Mac, und bieten nahtlose Integration. Die AirPods Pro bieten bis zu 6 Stunden Wiedergabe mit einer einzigen Aufladung und das Ladecase ermöglicht insgesamt bis zu 30 Stunden Betriebsdauer. Dank der schnellen Ladefunktion reichen nur 5 Minuten im Case für etwa 1 Stunde Wiedergabe oder Gesprächsdauer. Die Kopfhörer sind zudem spritzwassergeschützt (IP54) und bieten mit der verbesserten Steuerung über die Hörmuschel eine intuitive Nutzung. Im Lieferumfang sind die AirPods Pro, das MagSafe Ladecase (USB-C), Silikontips in vier Größen (XS, S, M, L) sowie ein USB-C Ladekabel enthalten. Genießen Sie Ihre Musik, Anrufe und Medien in bester Qualität – ideal für den Alltag und unterwegs.</p>","name_kurz":"APPLE AirPods Pro (2. Generation)"},{"id":"headphone_11","name":"SAMSUNG Buds 3, In-ear Kopfhörer Bluetooth Silber","brand":"SAMSUNG","Artikelnummer":"2940563","img":"Headphone_Bild_11.webp","preis":"155,- €","preis_angebot":"","beschreibung":"<p>Erleben Sie erstklassigen Sound mit den SAMSUNG Buds 3, den kompakten True Wireless In-ear Kopfhörern in elegantem Silber. Die Buds 3 bieten Ihnen bis zu 5 Stunden Wiedergabezeit mit aktivem Noise Cancelling (ANC) und bis zu 6 Stunden ohne ANC. Das Ladecase verlängert die Betriebsdauer auf bis zu 19 Stunden bei ANC und bis zu 24 Stunden ohne. Die Bluetooth 5.4-Technologie garantiert eine stabile Verbindung und eine schnelle, zuverlässige Audioübertragung. Dank des integrierten Mikrofons und der Lautstärkeregelung haben Sie die volle Kontrolle über Ihre Anrufe und Musik – ideal für unterwegs. Das Ladecase sorgt für schnelles Aufladen via USB-C. Die Kopfhörer sind leicht und bequem, und das schlichte Design in Silber passt zu jeder Gelegenheit.<br><strong>Technische Highlights:</strong><ul><li>True Wireless mit Bluetooth 5.4</li><li>Bis zu 6 Std. Wiedergabezeit (ANC aus), bis zu 5 Std. (ANC an)</li><li>ANC (Aktive Geräuschunterdrückung) für ungestörtes Hören</li><li>Integriertes Mikrofon und Lautstärkeregelung</li><li>USB-C-Ladeanschluss für bequemes Aufladen</li></ul><strong>Lieferumfang:</strong><ul><li>SAMSUNG Buds 3 In-ear Kopfhörer</li><li>Ladecase</li></ul>Die SAMSUNG Buds 3 sind der perfekte Begleiter für all Ihre täglichen Aktivitäten – mit hervorragendem Klang, praktischen Funktionen und einem modernen, eleganten Design.</p>","name_kurz":"SAMSUNG Buds 3"}]},{"name":"Staubsauger","icon":"category_vacuum_icon.svg","present":[4,5],"produkte":[{"id":"vacuum_1","name":"SAMSUNG VS15A60BGR5/WD Jet 65 PetPRO Stielsauger Stielsauger, Akkubetrieb","brand":"SAMSUNG","Artikelnummer":"2930245","img":"Vacuum_Bild_1.webp","preis":"254,99 €","preis_angebot":"","beschreibung":"<p>Der SAMSUNG Jet 65 PetPRO Stielsauger ist die perfekte Lösung für Ihre Reinigungserfordernisse, egal ob Sie Haustiere haben oder hartnäckigen Schmutz auf unterschiedlichen Oberflächen bekämpfen möchten. Mit seiner beeindruckenden maximalen Saugleistung von 150 Watt und einem mehrstufigen Filtersystem sorgt er für eine gründliche Reinigung, die Ihre Böden und Teppiche wieder makellos hinterlässt. Der Staubbehälter mit einem Volumen von 0,8 l ist beutellos und lässt sich mit der praktischen EasyClean-Funktion leicht entleeren. Dank der 3 elektronischen Saugstufen (Max., Mid., Min.) können Sie die Leistung des Stielsaugers ganz nach Bedarf anpassen. Besonders praktisch ist das bewegliche 180° Gelenk, das eine flexible Handhabung und die Reinigung auch in schwer zugänglichen Bereichen ermöglicht. Der Jet 65 PetPRO ist mit einer Jet Fit Bürste für Teppich- und Hartböden ausgestattet, sowie mit einer Mini-Turbodüse und einer 2-in-1 Kombidüse, um Tierhaare und Staub effizient zu entfernen. Ideal auch für Allergiker und Haushalte mit Haustieren. Die Akkulaufzeit von bis zu 40 Minuten ermöglicht eine gründliche Reinigung ohne ständiges Nachladen. Die Ladezeit beträgt lediglich 3,5 Stunden, sodass der Stielsauger schnell wieder einsatzbereit ist. Der leistungsstarke Lithium-Ionen-Akku sorgt für eine stabile Leistung über die gesamte Betriebszeit. <ul><li>Akkubetrieb mit 21,6 Volt Lithium-Ionen-Akku</li><li>3 Leistungsstufen für individuelle Saugkraft</li><li>Jet Fit Bürste für Teppiche und Hartböden</li><li>Mit Mini-Turbodüse, 2-in-1 Kombidüse und Teleskop-Fugendüse</li><li>Beutelloses System mit EasyClean-Funktion</li><li>Flexibles 180° Gelenk für einfache Handhabung</li><li>Bis zu 40 Minuten Betriebsdauer</li><li>3,5 Stunden Ladezeit</li><li>Leichtes Gewicht von 2,3 kg</li></ul>Im Lieferumfang enthalten sind der Akkustaubsauger, Jet Fit Bürste, Pet Tool, 2-in-1 Kombidüse, Teleskop-Fugendüse, ein wechselbarer Akku, eine 2-in-1 Ladestation, Netzteil und die Bedienungsanleitung. Der SAMSUNG Jet 65 PetPRO ist die ideale Wahl für eine gründliche, effiziente und flexible Reinigung – perfekt für Haushalte mit Haustieren und Allergikern.</p>","name_kurz":"SAMSUNG VS15A60BGR5/WD Jet 65 PetPRO"},{"id":"vacuum_2","name":"MIELE Classic C1 Flex Staubsauger, maximale Leistung: 800 Watt","brand":"MIELE","Artikelnummer":"2795048","img":"Vacuum_Bild_2.webp","preis":"159,99 €","beschreibung":"<p> Der MIELE Classic C1 Flex Staubsauger bietet Ihnen hervorragende Reinigungskraft und ist mit einer maximalen Leistung von 800 Watt besonders effizient. Mit einem großzügigen Aktionsradius von 9 Metern eignet sich dieser Staubsauger hervorragend für große Räume und sorgt für eine gründliche Reinigung. Der Filterbeutel mit AirClean Filter garantiert dabei eine besonders saubere Luft und fängt selbst feinsten Staub sicher auf. Mit einem Staubbehältervolumen von 4,5 Litern bietet der MIELE Classic C1 Flex ausreichend Platz für den aufgesaugten Staub und muss seltener geleert werden. Der Staubsauger verfügt über eine Filterwechselanzeige, die Sie rechtzeitig informiert, wenn es Zeit ist, den Filter zu wechseln. Dank der elektronischen 6-stufigen Drehregler können Sie die Saugleistung des Staubsaugers präzise an den jeweiligen Bodenbelag anpassen. Die Universal-Bodendüse SBD 355-3 und die Flexible Fugendüse SFD 20 sorgen dafür, dass alle Bereiche Ihres Haushalts gründlich gereinigt werden – vom Teppich bis zu den schmalsten Ecken. Das praktische Parksystem für Saugpausen ermöglicht es Ihnen, das Saugrohr während der Reinigung bequem abzustellen, ohne dass es umkippt. Mit dem Silence-System können Sie zudem besonders leise saugen, ohne den Geräuschpegel zu erhöhen. Weitere Merkmale des MIELE Classic C1 Flex Staubsaugers sind das dreiteilige Zubehör am VarioClip, ein großes Staubbeutelvolumen und der praktische Rotary Switch für die einfache Steuerung der Leistung. <ul><li>Maximale Leistung von 800 Watt</li><li>Aktionsradius von 9 Metern</li><li>AirClean Filter für saubere Luft</li><li>6-stufiger elektronischer Drehregler</li><li>Universal-Bodendüse und Flexible Fugendüse</li><li>Praktisches Parksystem für Saugpausen</li><li>Großes Staubbeutelvolumen von 4,5 Litern</li><li>Silence-System für leisen Betrieb</li><li>Robustes Edelstahl-Saugrohr und 5,5 m Anschlusskabel</li></ul>Der MIELE Classic C1 Flex Staubsauger ist die ideale Wahl für anspruchsvolle Reinigung, die sowohl gründlich als auch komfortabel ist. Er eignet sich für alle Arten von Böden und sorgt für eine saubere und allergenfreie Umgebung in Ihrem Zuhause.</p>","name_kurz":"MIELE Classic C1 Flex"},{"id":"vacuum_3","name":"DYSON 492636-01 V8 ADVANCED Stielsauger, Akkubetrieb, 425 Watt","brand":"DYSON","Artikelnummer":"2942515","img":"Vacuum_Bild_3.webp","preis":"339,- €","preis_angebot":"","beschreibung":"<p>Der DYSON 492636-01 V8 ADVANCED Stielsauger bietet mit seiner maximalen Leistung von 425 Watt und einer beeindruckenden maximalen Saugleistung von 130 AW eine herausragende Reinigungsleistung auf allen Böden. Ideal für die tägliche Reinigung und die Bekämpfung von Staub und Schmutz in jedem Raum, sorgt der Akkusauger mit seiner hocheffizienten Filtration für saubere Luft, indem er Schmutz, Staub und Allergene zuverlässig entfernt. Dank des praktischen, beutellosen Systems mit einem Staubbehältervolumen von 0.54 l lässt sich der Staubbehälter einfach entleeren, ohne dabei in Kontakt mit dem Staub zu kommen. Der Staubsauger ist mit einem Vormotorfilter und Nachmotorfilter ausgestattet, die beide waschbar sind und eine langanhaltende Leistung gewährleisten. Die Motorbar Elektrobürste ist speziell für die gründliche Reinigung von Teppichen und Hartböden konzipiert und entfernt auch hartnäckigen Schmutz und Tierhaare. Die Tierbürste sorgt für eine effektive Entfernung von Tierhaaren auf Polstermöbeln und anderen Oberflächen. Der DYSON V8 ADVANCED Stielsauger überzeugt zudem mit einer maximalen Betriebsdauer von 40 Minuten und einer Ladezeit von nur 5 Stunden. Der praktische Handstaubsauger ist ideal für schwer zugängliche Stellen wie Ritzen oder Möbelspalten. <p><strong>Weitere Merkmale:</p></strong><ul><li>Beutellose Technik für hygienische Handhabung</li><li>Inklusive Wandhalterung mit Ladefunktion</li><li>Filterwechselanzeige und Steuerung am Handgriff</li><li>4 Zubehördüsen für flexible Anwendungen: Motorbar Elektrobürste, Kombidüse, Fugendüse, Tierbürste</li></ul>Der DYSON V8 ADVANCED Stielsauger ist der perfekte Begleiter für eine gründliche, schnelle und einfache Reinigung in Ihrem Zuhause. Mit seiner starken Leistung, flexiblen Handhabung und zuverlässigen Filtration stellt er sicher, dass Ihr Zuhause jederzeit sauber und hygienisch bleibt.</p>","name_kurz":"DYSON 492636-01 V8 ADVANCED"},{"id":"vacuum_4","name":"SIEMENS VSQ5X1238 Staubsauger, maximale Leistung: 850 Watt","brand":"SIEMENS","Artikelnummer":"1672515","img":"Vacuum_Bild_4.webp","preis":"159,99 €","preis_angebot":"","beschreibung":"<p>Der SIEMENS VSQ5X1238 Staubsauger kombiniert eine starke Leistung von 850 Watt mit besonders leisen Betriebsgeräuschen von nur 70 dB (A). Mit seinem Aktionsradius von 13 m ermöglicht er eine große Reichweite und sorgt für eine effiziente Reinigung in größeren Räumen oder Wohnungen. Dank des HEPA-Hygienefilters, der waschbar ist, bietet dieser Staubsauger nicht nur eine gründliche Reinigung, sondern auch eine hohe Luftqualität, indem er feinste Staubpartikel auffängt. Der Staubbeutel hat ein Volumen von 4.5 l und ist mit 5 Filterbeuteln im Lieferumfang ausgestattet, die für eine längere Nutzung sorgen. Die SilentClean Premium Rollendüse sorgt für eine besonders gründliche Reinigung auf Teppichen und Hartböden. Mit der praktischen Umschaltbaren Rollendüse und den weiteren Aufsätzen wie der Polsterdüse und Fugendüse eignet sich der Staubsauger für eine Vielzahl von Oberflächen und schwer zugängliche Stellen. Ein weiteres praktisches Feature ist die elektronische Saugkraftregulierung, die eine einfache Anpassung der Saugkraft per Drehregler ermöglicht. Das automatische Kabelaufwicklungssystem sorgt für eine ordentliche und platzsparende Aufbewahrung des Kabels nach dem Gebrauch. Der SIEMENS VSQ5X1238 Staubsauger eignet sich besonders für die Reinigung von Hartholzböden, Parkettböden, Teppichen und Möbeln und bietet mit der softBumper Protection zusätzlichen Schutz für Möbel und Wände. Dank des Filtersystems ist der Staubsauger besonders gut für Haushalte mit Allergikern geeignet. <p><strong>Weitere Merkmale:</strong></p><ul><li>Besonders leise umschaltbare Rollendüse für extra gründliche Reinigung</li><li>Automatische Kabelaufwicklung für einfache Handhabung</li><li>4 Lenkrollen für hohe Mobilität</li><li>Inklusive 5 Filterbeuteln und praktischen Düsen</li></ul>Mit seinem eleganten Schwarz Design und der hohen Leistung ist der SIEMENS VSQ5X1238 Staubsauger die perfekte Wahl für eine effiziente und hygienische Reinigung in Ihrem Zuhause.</p>","name_kurz":"SIEMENS VSQ5X1238"},{"id":"vacuum_5","name":"MIELE DUOFLEX HX1 Stielsauger, Akkubetrieb, 25,2 Volt","brand":"MIELE","Artikelnummer":"2896751","img":"Vacuum_Bild_5.webp","preis":"329,99 €","preis_angebot":"","beschreibung":"<p>Der MIELE DUOFLEX HX1 Stielsauger kombiniert beeindruckende Leistung und Flexibilität in einem Gerät. Mit seinem leistungsstarken 25,2 Volt Lithium-Ionen Akku bietet der Staubsauger eine Betriebsdauer von bis zu 55 Minuten im Minimalmodus und bis zu 12 Minuten im maximalen Saugmodus, was eine effiziente Reinigung großer Flächen ermöglicht. Mit einer Flächenleistung von 60 m² eignet sich der MIELE DUOFLEX HX1 ideal für die Reinigung von Fliesen, Parkettböden, Teppichen und Möbeln. Der beutellose Staubbehälter mit einem Volumen von 0,3 l ist besonders einfach zu entleeren und sorgt für eine hygienische Handhabung. Die elektronische Saugkraftregulierung ermöglicht eine präzise Anpassung der Leistung in 2 Stufen, um verschiedene Oberflächen effektiv zu reinigen. Dank der Vortex-Technologie und des Digital Efficiency Motors erzielt der Staubsauger eine kraftvolle Saugleistung bei geringem Energieverbrauch. Für eine gründliche Reinigung auf allen Oberflächen sorgt die Elektrobürste HX-EB 20 MultiFloor, die sowohl für Teppiche als auch für Hartböden geeignet ist. Das vielseitige Zubehör, darunter die Fugendüse HX-CN, die Polsterdüse HX-UN und der Saugpinsel HX-DB, ermöglicht eine präzise Reinigung in engen Ecken und an Möbeln. <p><strong>Weitere Merkmale:</strong></p><ul><li>Bis zu 55 Minuten Laufzeit im Minimalmodus und bis zu 12 Minuten Laufzeit im Maximalmodus</li><li>Komfortable Zubehör-Aufbewahrung für eine ordentliche Aufbewahrung</li><li>Praktische elektronische Saugkraftregulierung</li><li>Leistungsstarker Digital Efficiency Motor und Vortex-Technologie für eine effektive Reinigung</li><li>Kompakte und leichte Bauweise für einfache Handhabung und Flexibilität</li></ul>Der MIELE DUOFLEX HX1 Stielsauger vereint Innovation, Flexibilität und Leistung in einem stilvollen Design. Mit der Farbe Brillantweiß passt er perfekt in jedes Zuhause und sorgt für eine gründliche und komfortable Reinigung auf allen Oberflächen.</p>","name_kurz":"MIELE DUOFLEX HX1"},{"id":"vacuum_6","name":"ROWENTA RO3725 Compact Power Cyclonic Classic Staubsauger, maximale Leistung: 750 Watt","brand":"ROWENTA","Artikelnummer":"2945471","img":"Vacuum_Bild_6.webp","preis":"79,99 €","preis_angebot":"","beschreibung":"<p>Der ROWENTA RO3725 Compact Power Cyclonic Classic Staubsauger überzeugt durch starke Leistung und praktische Handhabung. Mit einer maximalen Leistung von 750 Watt und beutelloser Zyklonfilter-Technologie entfernt dieser Staubsauger effizient Staub und Schmutz von allen Oberflächen. Der 1,5 l Staubbehälter ermöglicht eine lange Nutzung ohne häufiges Entleeren. Der Aktionsradius von 8,8 m bietet genügend Reichweite, um größere Räume mühelos zu reinigen. Dank der kombinierten Bürste für Teppiche und Hartböden können Sie sowohl auf weichen als auch auf harten Oberflächen eine gründliche Reinigung erzielen. Mit einem Schallleistungspegel von 79 dB(A) arbeitet der Staubsauger leise und effizient. Die automatische Kabelaufwicklung und das teleskopische Rohr bieten zusätzlichen Komfort, indem sie das Verstauen und Anpassen der Saugrohrlänge erleichtern. <p><strong>Besondere Merkmale:</strong></p><ul><li><strong>Beutellose Zyklon-Technologie</strong> für eine einfache und hygienische Entleerung</li><li><strong>Große Räder</strong> für müheloses Überwinden von Hindernissen und komfortables Manövrieren</li><li><strong>6,2 m Kabellänge</strong> für eine gute Reichweite bei der Reinigung</li><li>Ideal für Fliesen, Parkettböden, Teppiche, Möbel und mehr</li></ul>Der ROWENTA RO3725 Compact Power Cyclonic Classic Staubsauger ist der perfekte Helfer für eine gründliche Reinigung in Ihrem Zuhause. Mit seinem kompakten Design und der starken Leistung bietet er Ihnen alles, was Sie für eine einfache und effektive Reinigung benötigen.</p>","name_kurz":"ROWENTA RO3725 Compact Power Cyclonic Classic"},{"id":"vacuum_7","name":"PHILIPS FC9331/09 PowerPro Compact 3000 Serie beutellos, Staubsauger, maximale Leistung: 900 Watt","brand":"PHILIPS","Artikelnummer":"2229891","img":"Vacuum_Bild_7.webp","preis":"129,99 €","preis_angebot":"","beschreibung":"<p>Der PHILIPS FC9331/09 PowerPro Compact 3000 Serie Staubsauger bietet Ihnen eine starke und beutellose Reinigungskraft mit innovativer PowerCyclone 5-Technologie. Mit einer maximalen Leistung von 900 Watt und einem Luftstrom von 27,8 l/s sorgt er für eine gründliche Reinigung auf allen Oberflächen. Dank des beutellosen Systems mit einem 1,5 l Staubbehälter und einem leicht entleerbaren Behälter wird das Entleeren besonders einfach und hygienisch. Der Allergiefilter sorgt für saubere Luft und ist zudem waschbar, wodurch der Staubsauger besonders pflegeleicht bleibt. Mit der TriActive-Düse und der Hartbodendüse können Sie sowohl Teppiche als auch empfindliche Hartböden mühelos reinigen. Der Staubsauger ist mit einem teleskopischen Rohr ausgestattet, das sich an Ihre Bedürfnisse anpasst, und einer integrierten Bürste für zusätzliche Flexibilität.<br>Der PHILIPS FC9331/09 Staubsauger überzeugt durch:<ul><li><strong>PowerCyclone 5-Technologie</strong> für leistungsstarke Saugleistung</li><li><strong>Leicht entleerbaren Staubbehälter</strong> mit 1,5 l Volumen</li><li><strong>Allergiefilter</strong>, der die Luft reinigt und waschbar ist</li><li><strong>Aktionsradius von 9 m</strong> für größere Reichweite bei der Reinigung</li><li><strong>Besondere Düse für Hartböden</strong>, die mühelos Staub und Schmutz entfernt</li><li><strong>Fugendüse</strong> und integrierte Bürste für flexible Reinigung</li></ul>Der Staubsauger eignet sich hervorragend für Hartholzböden, Parkettböden und Teppiche, wobei er dank seiner kompakten Größe und seines leichten Gewichts auch problemlos in engen Räumen verwendet werden kann. Mit der praktischen Zubehörhalterung am Gerät ist alles immer griffbereit.</p>","name_kurz":"PHILIPS FC9331/09 PowerPro Compact 3000"},{"id":"vacuum_8","name":"CLATRONIC BS 1306 N Stielsauger, maximale Leistung: 600 Watt","brand":"CLATRONIC","Artikelnummer":"2194805","img":"Vacuum_Bild_8.webp","preis":"54,99 €","preis_angebot":"","beschreibung":"<p>Der CLATRONIC BS 1306 N Stielsauger ist ein kompakter und leistungsstarker Staubsauger für vielseitige Anwendungen in Ihrem Haushalt. Mit einer maximalen Leistung von 600 Watt und einem praktischen Netzbetrieb sorgt dieser Stielsauger für eine kontinuierlich starke Saugleistung. Der HEPA-Filter sorgt für eine gründliche Filtration und eignet sich hervorragend für Allergiker, da er selbst feinste Staubpartikel aus der Luft entfernt. Dank des beutellosen Systems mit einem 0,5 l Staubbehälter wird das Entleeren kinderleicht und hygienisch. Der Multifilter gewährleistet eine effiziente Staubaufnahme und hält die Luft sauber. Dieser Staubsauger ist mit einem praktischen 2-teiligen Aluminium-Saugrohr ausgestattet, das für eine bequeme Handhabung sorgt und sich ideal für unterschiedliche Höhen und Winkel eignet. Zudem verfügt der CLATRONIC BS 1306 N über eine Fugendüse und eine Bodenbürste für eine effektive Reinigung auf allen Oberflächen.<br>Der Staubsauger überzeugt durch:<ul><li><strong>Maximale Leistung von 600 Watt</strong> für starke Saugleistung</li><li><strong>HEPA-Filter</strong> für Allergiker und eine saubere Luft</li><li><strong>Beutelloses System</strong> mit einem 0,5 l Staubbehälter</li><li><strong>Multifiltersystem</strong> für bessere Filtration</li><li>Praktisches 2-teiliges Aluminium-Saugrohr für flexibles Saugen</li><li><strong>Komfortable Wandhalterung</strong> für platzsparende Aufbewahrung</li></ul>Der CLATRONIC BS 1306 N Stielsauger ist besonders geeignet für Fliesen, Hartböden und Teppiche. Mit seinem 6500 mm langen Anschlusskabel haben Sie ausreichend Reichweite, um auch größere Flächen problemlos zu reinigen. Er ist die ideale Wahl für Haushalte, die auf eine effektive und schnelle Reinigung angewiesen sind.</p>","name_kurz":"CLATRONIC BS 1306 N"},{"id":"vacuum_9","name":"SIEMENS VS06A111 synchropower Staubsauger, maximale Leistung: 600 Watt","brand":"SIEMENS","Artikelnummer":"2144127","img":"Vacuum_Bild_9.webp","preis":"82,99 €","preis_angebot":"","beschreibung":"<p>Der SIEMENS VS06A111 Synchropower Staubsauger ist ein leistungsstarker Zylinderstaubsauger, der mit einer maximalen Leistung von 600 Watt für eine gründliche Reinigung sorgt. Mit seinem großen Staubbeutelvolumen von 4 l und dem praktischen Hygienefilter ist dieser Staubsauger perfekt für Haushalte, die auf Sauberkeit und Allergikerfreundlichkeit Wert legen. Der Filter ist zudem waschbar und sorgt dafür, dass die Luft frei von Staubpartikeln bleibt. Dank der elektronischen Saugkraftregulierung und dem elektronischen Drehregler können Sie die Saugkraft individuell an verschiedene Bodenarten und Verschmutzungen anpassen. Für eine bequeme Handhabung sorgt das praktische Teleskoprohr, das sich perfekt an Ihre Bedürfnisse anpassen lässt, sowie das automatische Kabelaufwicklungssystem für eine platzsparende Aufbewahrung. Der Staubsauger ist mit einer umschaltbaren Rollendüse, einer Fugendüse und einer Polsterdüse ausgestattet, die eine vielseitige Anwendung auf verschiedenen Oberflächen ermöglichen. Er eignet sich hervorragend für die Reinigung von Hartholzböden, Parkettböden, Teppichen, Fliesen und Möbeln. <p><strong>Besondere Merkmale:</strong></p><ul><li><strong>Maximale Leistung von 600 Watt</strong> für kraftvolle Saugleistung</li><li><strong>Hygienefilter</strong> für saubere Luft und Allergikerfreundlichkeit</li><li><strong>Beutelloses System</strong> mit 4 l Vliesbeutel</li><li><strong>Elektronische Saugkraftregulierung</strong> für optimale Reinigungsergebnisse</li><li><strong>Teleskoprohr und praktisches Kabelaufwicklungssystem</strong></li><li><strong>Vielseitiges Zubehör</strong> (Rollendüse, Fugendüse, Polsterdüse) für verschiedene Anwendungen</li></ul>Der SIEMENS VS06A111 Synchropower Staubsauger bietet Ihnen eine komfortable und effektive Lösung für die tägliche Reinigung in Ihrem Zuhause. Mit seiner starken Leistung und praktischen Funktionen ist er der ideale Helfer für ein sauberes Zuhause.</p>","name_kurz":"SIEMENS VS06A111"},{"id":"vacuum_10","name":"ROWENTA RH2039 X-Force Flex 9.60 Allergy Stielsauger, Akkubetrieb, 250 Watt","brand":"ROWENTA","Artikelnummer":"2823257","img":"Vacuum_Bild_10.webp","preis":"179,- €","preis_angebot":"","beschreibung":"<p>Der ROWENTA RH2039 Stielsauger bietet eine perfekte Kombination aus Leistung und Komfort, ideal für eine gründliche und effiziente Reinigung Ihres Zuhauses. Mit einer beeindruckenden maximalen Betriebsdauer von 45 Minuten und einer Ladezeit von nur 4 Stunden sorgt dieser Staubsauger für eine konstante und starke Saugkraft bei maximaler Autonomie. Das Smart Control Display ermöglicht eine einfache Steuerung und zeigt Ihnen die aktuelle Lade- und Filterstatusanzeige an. Die automatische Anpassung der Saugkraft passt sich perfekt an Ihre Bedürfnisse an, während das Flex-Gelenk Ihnen maximale Flexibilität bei der Reinigung von schwer erreichbaren Stellen bietet. Der ROWENTA RH2039 Stielsauger ist mit einem leistungsstarken 18,5 Volt Lithium-Ionen-Akku ausgestattet, der für nachhaltigen Betrieb sorgt. Er erfüllt die Kriterien von BetterWay, da er weniger als 400 Watt verbraucht, was ihn besonders umweltfreundlich und kosteneffizient macht. Das schlanke und kompakte Design des Geräts ermöglicht eine komfortable Handhabung, und die praktische LED-Düse sorgt für eine gründliche Reinigung, auch in dunklen Ecken. Die Inklusive Handstaubsauger bietet zusätzlich Flexibilität und macht den RH2039 zu einem echten Allrounder. <p><strong>Lieferumfang:</strong></p> Stielsauger, Ladestation, Fugendüse, Polsterbürste, Ladegerät und Schnellstart-Anleitung. <p><strong>Besondere Merkmale:</strong></p> Flex-Gelenk, LED-Düse, Smart Control Display, automatische Saugkraftanpassung, BetterWay Technologie.</p>","name_kurz":"ROWENTA RH2039 X-Force Flex 9.60"},{"id":"vacuum_11","name":"SIEMENS VSQ5X1230 Staubsauger, maximale Leistung: 850 Watt","brand":"SIEMENS","Artikelnummer":"1504210","img":"Vacuum_Bild_11.webp","preis":"139,99 €","preis_angebot":"","beschreibung":"<p>Der SIEMENS VSQ5X1230 Staubsauger überzeugt durch starke Leistung und vielseitige Funktionen, die Ihr Zuhause gründlich reinigen – von Hartböden bis Teppichen. Mit einer maximalen Leistung von 850 Watt und einem Aktionsradius von 13 m bietet dieser Staubsauger Flexibilität und Effizienz in jedem Raum. Die umschaltbare Rollendüse SilentClean sorgt dabei für eine geräuschoptimierte und gleichmäßige Reinigung auf allen Bodenarten. Ausgestattet mit einem HEPA-Filter, der waschbar ist, fängt der Staubsauger selbst kleinste Partikel ein und trägt zur Verbesserung der Luftqualität bei – besonders wichtig für Allergiker. Der 4,5 l Staubbeutel bietet eine große Kapazität für längere Einsatzzeiten ohne häufiges Entleeren. Die elektronische Saugkraftregulierung ermöglicht es Ihnen, die Leistung präzise nach Bedarf anzupassen. Mit der automatischen Kabelaufwicklung und dem Teleskoprohr ist der Staubsauger besonders benutzerfreundlich und lässt sich problemlos verstauen. Dank des Filtersperrensystems wird eine optimale Filterwirkung gewährleistet, ohne dass der Filter versehentlich entfernt wird. <p><strong>Besondere Merkmale:</strong></p> <ul><li>Maximale Leistung von 850 Watt für kraftvolle Reinigung</li><li>Geräuschoptimierte SilentClean Rollendüse für leises Saugen</li><li>HEPA-Filter (waschbar) für allergikerfreundliche Luft</li><li>Elektronische Saugkraftregulierung mit praktischem Drehregler</li><li>Automatische Kabelaufwicklung für komfortables Aufräumen</li><li>Großer 4,5 l Staubbeutel für längere Saugzeiten</li><li>Kombibürste für Teppich und Hartboden sowie 2-teiliges Zubehör: Polster- und Fugendüse</li><li>Filter-Sperrsystem zur Sicherstellung der richtigen Filterplatzierung</li></ul> Dieser Staubsauger ist ideal für alle, die auf der Suche nach einem leistungsstarken, flexiblen Gerät sind, das sowohl hygienisch reinigt als auch die Luftqualität in Ihrem Zuhause verbessert. Perfekt für Allergiker und Haushalte mit verschiedenen Bodenarten.</p>","name_kurz":"SIEMENS VSQ5X1230"}]},{"name":"Kaffemaschinen","icon":"category_coffee_icon.svg","present":[10,6],"produkte":[{"id":"coffee_1","name":"RUSSELL HOBBS 23241-56 Luna Moonlight Grey Kaffeemaschine Edelstahl/Grau","brand":"RUSSEL HOBBS","Artikelnummer":"2307267","img":"Kaffee_Bild_1.webp","preis":"59,99 €","preis_angebot":"","beschreibung":"<p>Die RUSSELL HOBBS 23241-56 Luna Kaffeemaschine in edlem Moonlight Grey Design vereint modernste Technik und elegantes Aussehen. Mit einer Leistung von 1000 Watt bereitet sie bis zu 14 Tassen Kaffee zu und überzeugt durch die Brausekopf-Technologie, die für eine bessere Kaffee-Extraktion sorgt und ein unverwechselbares Aroma liefert. Die Glaskanne mit einem Fassungsvermögen von 1,8 l ist mit einer praktischen Füllmengenmarkierung und einem Scharnierdeckel ausgestattet. Die Kaffeemaschine verfügt über zahlreiche Funktionen für Ihren Komfort, darunter die Warmhaltefunktion, die den Kaffee bis zu 40 Minuten auf der idealen Temperatur hält, und ein praktischer Tropfstopp, der das Verschütten von Kaffee verhindert. Mit der vorprogrammierbaren Einschaltzeit können Sie Ihren Kaffee jederzeit frisch genießen. Das digitale Infodisplay mit einstellbarem Timer und die Füllstandsanzeige machen die Bedienung besonders einfach und intuitiv. Die Oberfläche aus hochwertigem Edelstahl mit einer fingerabdruckresistenten Lackierung und die abnehmbaren Teile wie der Filterhalter sorgen für eine besonders einfache Reinigung. Die automatische Abschaltautomatik sorgt zudem für zusätzliche Sicherheit. Die Kaffeemaschine ist ideal für den täglichen Gebrauch und überzeugt durch hohe Leistung und elegantes Design.<p><strong>Lieferumfang:</strong></p><ul><li>Kaffeemaschine inkl. Glaskanne</li><li>Filterhalter und Bedienungsanleitung</li></ul></p>","name_kurz":"RUSSELL HOBBS 23241-56"},{"id":"coffee_2","name":"PHILIPS HD7546/20 Café Gaia mit Thermokanne aus Edelstahl, 1,2 Liter, 1000 Watt, Kaffeemaschine Schwarz/Silber","brand":"PHILIPS","Artikelnummer":"1019418","img":"Kaffee_Bild_2.webp","preis":"69,- €","preis_angebot":"","beschreibung":"<p>Die PHILIPS HD7546/20 Café Gaia Kaffeemaschine in stilvollem Schwarz/Silber bietet Ihnen alles, was Sie für eine perfekte Tasse Kaffee benötigen. Mit einer maximalen Leistung von 1000 Watt und einem Fassungsvermögen von 1,2 l bereitet sie bis zu 15 Tassen köstlichen Kaffee zu. Die hochwertige Thermokanne aus Edelstahl hält Ihren Kaffee länger heiß und bewahrt das volle Aroma. Dank der praktischen Tropfstopp-Funktion können Sie den Brühvorgang jederzeit unterbrechen, ohne dass etwas daneben geht. Die Kaffeemaschine ist mit einem Schwenkfilter ausgestattet, der für eine einfache Handhabung sorgt. Der Füllstandsanzeige ermöglicht es Ihnen, den Wasserstand jederzeit im Blick zu behalten. Die PHILIPS Café Gaia Kaffeemaschine punktet mit einem schlichten, modernen Design, das sich in jede Küche einfügt. Sie bietet eine einfache Bedienung ohne unnötigen Schnickschnack und überzeugt durch eine Abschaltautomatik für mehr Sicherheit. Die Teile sind spülmaschinenfest, was die Reinigung besonders unkompliziert macht.<p><strong>Lieferumfang:</strong></p><ul><li>Kaffeemaschine</li><li>Thermokanne aus Edelstahl</li><li>Bedienungsanleitung</li></ul></p>","name_kurz":"PHILIPS HD7546/20 Café Gaia"},{"id":"coffee_3","name":"BRAUN PurAroma 7 KF 7120 Kaffeemaschine Edelstahl/Schwarz","brand":"BRAUN","Artikelnummer":"2178957","img":"Kaffee_Bild_3.webp","preis":"99,99 €","preis_angebot":"","beschreibung":"<p>Die BRAUN PurAroma 7 KF 7120 Kaffeemaschine ist die perfekte Wahl für Kaffeeliebhaber, die auf Qualität und Geschmack nicht verzichten möchten. Mit einer maximalen Leistung von 1000 Watt und einem Fassungsvermögen des Wassertanks von 1,66 l können Sie bis zu 12 Tassen köstlichen Kaffee zubereiten. Dank des OptiBrew Systems und der Brausekopf-Technologie wird das volle Aroma aus Ihrem Kaffee herausgeholt. Die Aroma-Glaskanne mit einer Füllmenge von 1,5 l sorgt für eine einfache Handhabung und ist mit einer praktischen Tropfstopp-Funktion ausgestattet. Sie können den Brühvorgang jederzeit unterbrechen, ohne dass etwas daneben geht. Mit der programmierbaren 24-Stunden-Timer-Funktion können Sie die Kaffeemaschine im Voraus einstellen, damit Sie jederzeit frisch gebrühten Kaffee genießen können. Für zusätzliche Komfort sorgt das Premium LCD-Display mit Drucktasten für einfache Steuerung. Sie können die Kaffeestärke nach Ihren Wünschen anpassen und für kleinere Mengen die 1-4 Tassen Einstellung nutzen. Ein integrierter Reinigungs- und Entkalkungsalarm sowie die Abschaltautomatikgarantieren eine einfache Wartung und hohe Sicherheit.<p><strong>Lieferumfang:</strong></p><ul><li>Kaffeemaschine mit Aroma-Glaskanne</li><li>Bedienungsanleitung</li></ul></p>","name_kurz":"BRAUN PurAroma 7 KF 7120","present":10},{"id":"coffee_4","name":"OK. OCM 7521 B Kaffeemaschine Schwarz","brand":"OK.","Artikelnummer":"2645420","img":"Kaffee_Bild_4.webp","preis":"17,99 €","preis_angebot":"","beschreibung":"<p>Die OK. OCM 7521 B Kaffeemaschine ist die perfekte Lösung für all Ihre Kaffeebedürfnisse. Mit einer maximalen Leistung von 750 Watt und einem Fassungsvermögen der Glaskanne von 1,25 l können Sie bis zu 10 Tassen frischen Kaffee zubereiten. Die Kaffeemaschine bietet eine praktische Tropfstopp-Funktion, die es ermöglicht, den Brühvorgang jederzeit zu unterbrechen, ohne dass Kaffeeflecken entstehen. Die Warmhaltefunktion sorgt dafür, dass Ihr Kaffee über einen längeren Zeitraum heiß bleibt, und die abnehmbare Wassertank erleichtert das Nachfüllen und Reinigen. Mit der praktischen Abschaltautomatik schaltet sich die Maschine nach dem Brühen automatisch aus, um Energie zu sparen und Ihre Sicherheit zu gewährleisten. Dank der Filtersystemgröße 4 ist die Zubereitung Ihres Kaffees besonders effizient. Diese Kaffeemaschine ist ideal für alle, die Wert auf ein gutes Preis-Leistungs-Verhältnis und eine einfache Bedienung legen.<p><strong>Lieferumfang:</strong></p><ul><li>1x Kaffeemaschine</li><li>1x Messlöffel</li><li>Bedienungsanleitung</li></ul></p>","name_kurz":"OK. OCM 7521 B"},{"id":"coffee_5","name":"JURA Z10 (EA) Cold Brew Kaffeevollautomat Aluminium Black","brand":"JURA","Artikelnummer":"2731049","img":"Kaffee_Bild_5.webp","preis":"2299,- €","preis_angebot":"","beschreibung":"<p>Der JURA Z10 (EA) Cold Brew Kaffeevollautomat bietet eine innovative Zubereitungstechnik, die anspruchsvollste Kaffeegenießer begeistert. Mit einer maximalen Leistung von 1450 Watt und einem 2,4 l Wassertank ist der Kaffeevollautomat für alle, die Wert auf höchste Qualität und Vielseitigkeit legen, die perfekte Wahl. Durch den neuen Product Recognising Grinder (P.R.G.) wird der Mahlgrad automatisch angepasst, um jede Kaffeespezialität perfekt abzustimmen. Das einzigartige Cold Brew-Verfahren sorgt für eine erfrischend ausgewogene Zubereitung – von kaltem Cold Brew Kaffee bis hin zu köstlichen Milchspezialitäten. Mit insgesamt 32 Kaffeespezialitäten, einschließlich Spezialitäten mit und ohne Milch sowie innovativen Zubereitungen wie Cold Brew Espresso und Flat White Extra Shot, ist die Z10 der perfekte Partner für individuelle Kaffeegenüsse. Das 4.3” Touchscreen-Farbdisplay bietet eine einfache Bedienung, während die One-Touch-Funktion die Zubereitung aller Spezialitäten mit nur einem Knopfdruck ermöglicht. Die individuell einstellbare Kaffeestärke, Brühtemperatur und Milchschaummenge bieten Ihnen die Freiheit, jedes Getränk nach Ihren Wünschen anzupassen. Mit WLAN- und Bluetooth-Funktionen lässt sich der Kaffeevollautomat problemlos in Ihr Smart Home integrieren. Das hochwertige Rundumdesign mit Aluminiumfront sorgt für eine stilvolle Ergänzung in jeder Küche.<p><strong>Lieferumfang:</strong></p><ul><li>Kaffeevollautomat</li><li>WiFi Connect</li><li>Behälter für Milchsystem-Reinigung</li><li>Dosierlöffel für gemahlenen Kaffee</li><li>Filterummantelung</li><li>Bedienungsanleitung</li></ul></p>","name_kurz":"JURA Z10 (EA)"},{"id":"coffee_6","name":"PHILIPS BAR300/60 Baristina Espressomaschine Schwarzgrau","brand":"PHILIPS","Artikelnummer":"2931402","img":"Kaffee_Bild_6.webp","preis":"292,99 €","preis_angebot":"","beschreibung":"<p>Die PHILIPS BAR300/60 Baristina Espressomaschine ist die perfekte Wahl für Kaffeeliebhaber, die auf der Suche nach Espresso in Barista-Qualität sind. Mit einer maximalen Leistung von 1550 Watt und einem 16 bar Pumpendruck wird der feine Geschmack der Bohnen optimal extrahiert. Diese Espressomaschine bringt die Kaffeekunst direkt in Ihre Küche und bietet Ihnen zwei Standardrezepte: Espresso und Café Crema. Die Intensitätsverstärkungsfunktion ermöglicht es Ihnen, die Stärke des Kaffees nach Ihren Wünschen anzupassen. Der integrierte Keramik-Mahlwerk sorgt für einen perfekten Mahlgrad und die ideale Dosierung des Kaffeepulvers. Ein besonderes Highlight der Baristina ist die einfache Handhabung: Mit nur einem Swipe können Sie den Siebträger herausnehmen, und der Kaffeesatz wird auf Knopfdruck entfernt – ganz ohne Kleckern und ohne versteckte Fächer zum Reinigen. Dank des kompakten Designs passt die Baristina Espressomaschine in jede Küche, ohne dabei an Leistung einzubüßen. Das Gerät arbeitet sehr leise (72 dB), sodass Sie sich ohne störende Geräusche an Ihrem perfekten Espresso erfreuen können. Die benutzerfreundliche Bedienung erfolgt über beleuchtete Tasten und sorgt für eine einfache Handhabung.<p><strong>Lieferumfang:</strong></p><ul><li>Baristina Espressomaschine</li><li>Siebträger</li><li>Bedienungsanleitung</li></ul></p>","name_kurz":"PHILIPS BAR300/60 Baristina"},{"id":"coffee_7","name":"DELONGHI La Specialista Maestro Cold Brew EC9865.M  Espressomaschine Silber/Schwarz","brand":"DELONGHI","Artikelnummer":"2855884","img":"Kaffee_Bild_7.webp","preis":"1549,- €","preis_angebot":"","beschreibung":"<p>Erleben Sie höchsten Kaffeegenuss mit der DELONGHI La Specialista Maestro Cold Brew EC9865.M Espressomaschine. Mit einer Leistung von 1450 Watt und einem Pumpendruck von 19 bar bereitet sie köstlichen Espresso, Cold Brew und viele andere Kaffeespezialitäten zu. Die ActiveTemperature Control Technologie bietet fünf Brühtemperaturen zur optimalen Zubereitung. Dank des integrierten Kegelmahlwerks mit 8 Mahlgraden und der Beans SensorGRINDING Technologie erhalten Sie immer den perfekten Mahlgrad. Die Maschine bietet 8 voreingestellte Rezepte wie Espresso, Americano, Cappuccino, Latte Macchiato und mehr. Manuelles Aufschäumen ist mit der My LatteArt Dampflanze möglich. Der abnehmbare Milchbehälter und die Schnell-Dampf-Funktion ermöglichen eine unkomplizierte Zubereitung. Der Tropfstopp sorgt für eine saubere Arbeitsfläche, und der automatische Entkalkungsalarm gewährleistet eine einfache Pflege. Genießen Sie einen perfekten Kaffee mit der DELONGHI La Specialista Maestro Cold Brew EC9865.M.<p><strong>Lieferumfang:</strong></p><ul><li>Espressomaschine</li><li>LatteCrema</li><li>Karaffe</li><li>Reinigungsbälle</li><li>Reinigungsnadel</li><li>1-Tassen- und 2-Tassen-Sieb</li><li>Bedienungsanleitung</li></ul><p><strong>Technische Details:</strong></p><ul><li>Leistung: 1450 Watt</li><li>Pumpendruck: 19 bar</li><li>Wassertank: 2,5 l</li><li>Milchbehälter: 230 ml</li><li>Gewicht: 16 kg</li><li>Gehäusematerial: Edelstahl</li><li>Geeignet für Kaffeebohnen und Espressopulver</li></ul></p>","name_kurz":"DELONGHI La Specialista Maestro Cold Brew EC9865.M"},{"id":"coffee_8","name":"KRUPS KP2708 Nescafé Dolce Gusto Infinissima Touch Kapselmaschine Schwarz","brand":"KRUPS","Artikelnummer":"2765495","img":"Kaffee_Bild_8.webp","preis":"94,- €","preis_angebot":"","beschreibung":"<p>Die KRUPS KP2708 Nescafé Dolce Gusto Infinissima Touch Kapselmaschine in elegantem Schwarz bietet Ihnen auf Knopfdruck eine Vielzahl an köstlichen Getränken – vom kräftigen Espresso bis zum erfrischenden Eistee. Mit einer maximalen Leistung von 1500 Watt und einem beeindruckenden Pumpendruck von 15 bar bringt die Maschine das Beste aus den Nescafé Dolce Gusto Kapseln heraus und sorgt für ein intensives Aroma. Dank des modernen Touchscreens und der LED-Volumenanzeige können Sie Ihre Getränke ganz einfach auswählen und in der gewünschten Größe zubereiten. Die XL-Funktion ermöglicht die Zubereitung von Getränken in verschiedenen Tassengrößen – ideal für große Tassen oder Becher. Der abnehmbare 1,2 Liter Wassertank lässt sich einfach befüllen und reinigen, während die Öko-Modus-Funktion die Maschine nach 1 Minute Inaktivität automatisch in den energiesparenden Modus versetzt. Die Infinissima Touch ist nicht nur praktisch, sondern auch besonders benutzerfreundlich. Mit der Warnmeldung zum Entkalken und der Abschaltautomatik bleibt Ihre Maschine immer in einwandfreiem Zustand, sodass Sie sich zurücklehnen und Ihren Kaffee genießen können, ohne sich um die Wartung kümmern zu müssen. <p><strong>Besondere Merkmale:</strong></p><ul><li>Hochdrucksystem mit bis zu 15 Bar für intensiven Kaffeegeschmack</li><li>XL-Funktion für größere Tassen und Becher</li><li>Zubereitung von 35 Heiß- und Kaltgetränken aus dem Coffee Shop-Menü</li><li>Öko-Modus nach 1 Minute Inaktivität</li><li>Abnehmbarer Wassertank (1,2 l Fassungsvermögen)</li><li>Touchscreen für eine benutzerfreundliche Bedienung</li><li>Warnmeldung zum Entkalken und Betriebskontrollleuchte</li></ul><br>Die KRUPS KP2708 Nescafé Dolce Gusto Infinissima Touch ist die perfekte Wahl für alle, die den Komfort und die Vielseitigkeit einer Kapselmaschine mit einem modernen Design und fortschrittlicher Technik kombinieren möchten. Egal, ob Sie einen klassischen Espresso oder ein kühles Erfrischungsgetränk möchten, mit dieser Maschine können Sie immer das perfekte Getränk zaubern.<p><strong>Lieferumfang:</strong></p><ul><li>Kapselmaschine</li><li>Bedienungsanleitung</li></ul><br>Hol dir das ultimative Kaffeeerlebnis nach Hause – mit der KRUPS KP2708 Nescafé Dolce Gusto Infinissima Touch Kapselmaschine!</p>","name_kurz":"KRUPS KP2708 Nescafé Dolce Gusto Infinissima Touch"},{"id":"coffee_9","name":"BRAUN Aromaster Classic KF 47/1 BK Kaffeemaschine Schwarz","brand":"BRAUN","Artikelnummer":"1971631","img":"Kaffee_Bild_9.webp","preis":"49,99 €","preis_angebot":"","beschreibung":"<p>Mit der BRAUN Aromaster Classic KF 47/1 BK Kaffeemaschine genießen Sie jederzeit aromatischen Kaffee. Diese leistungsstarke Kaffeemaschine mit 1000 Watt Leistung und dem OptiBrew System sorgt für eine gleichmäßige Extraktion des Kaffees, sodass jeder Kaffee frisch und vollmundig schmeckt. Der Wassertank hat ein Fassungsvermögen von 1,38 l und reicht für bis zu 10 Tassen. Die Tropf-Technologie garantiert eine einfache Zubereitung, während der praktische Tropfstopp dafür sorgt, dass keine Tropfen auf die Arbeitsfläche gelangen. Die Aromaglas-Kanne hat ein Volumen von 1,25 l und ist ideal zum Ausgießen von Kaffee geeignet. Die Warmhaltefunktion hält Ihren Kaffee bis zu 40 Minuten auf der richtigen Temperatur, und die Abschaltautomatik sorgt für zusätzliche Sicherheit. Dank des abnehmbaren Filterhalters mit Überlaufschutz lässt sich die Kaffeemaschine leicht reinigen. Weitere Merkmale sind der Überhitzungsschutz und der Trockengehschutz, die für zusätzliche Sicherheit sorgen.<p><strong>Technische Details:</strong></p><ul><li>Maximale Leistung: 1000 Watt<7li><li>Wassertank: 1,38 l</li><li>Fassungsvermögen Kanne: 1,25 l</li><li>Tropfstopp</li><li>Warmhaltefunktion</li><li>abnehmbarer Filterhalter</li><li>Abschaltautomatik</li><li>geeignet für gemahlenen Kaffee.</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>Kaffeemaschine mit Aroma-Glaskanne</li><li>Bedienungsanleitung</li></ul><p><strong>Maße:</strong> Breite: 180 mm, Höhe: 310 mm, Tiefe: 260 mm, Gewicht: 1,7 kg.<br><strong>Farbe:</strong> Schwarz.</p></p>","name_kurz":"BRAUN Aromaster Classic KF 47/1 BK"},{"id":"coffee_10","name":"TCHIBO Esperto Caffè 1.1 Kaffeevollautomat Silber","brand":"TCHIBO","Artikelnummer":"2834139","img":"Kaffee_Bild_10.webp","preis":"349,- €","preis_angebot":"199,- €","beschreibung":"<p>Der TCHIBO Esperto Caffè 1.1 vereint modernes Design und leistungsstarke Technologie für ein außergewöhnliches Kaffeeerlebnis. Mit einer maximalen Leistung von 1470 Watt und einem Pumpendruck von 19 bar bereitet dieser Kaffeevollautomat Espresso und Caffè Crema in Barista-Qualität zu. Der integrierte Edelstahl-Kegelmahlwerk ermöglicht eine stufenlose Mahlgradeinstellung, um die perfekte Kaffeestärke ganz nach Ihrem Geschmack zu erzielen. Die Intense+ Technologie sorgt für eine individuell anpassbare Kaffeestärke, während die programmierbare Getränkemenge von 25 bis 250 ml für maßgeschneiderte Kaffeegenüsse sorgt. Dank der Doppio-Funktion können Sie zwei Tassen gleichzeitig zubereiten. Der Tchibo Esperto Caffè hat einen abnehmbaren Wassertank (1,1 l) und ist mit einer praktischen Reinigungsfunktion ausgestattet, die eine automatische Entkalkungsanzeige sowie entnehmbare Teile für eine schnelle Reinigung umfasst. Das platzsparende Design (nur 18 cm breit) passt problemlos in jede Küche. Weitere Merkmale sind ein höhenverstellbarer Auslauf und eine Tassenbeleuchtung für eine stilvolle Zubereitung. <p><strong>Technische Details:</strong></p><ul><li>Maximale Leistung: 1470 Watt</li><li>Wassertank: 1,1 l</li><li>Pumpendruck: 19 bar</li><li>Mahlwerk: Edelstahl-Kegelmahlwerk</li><li>Bohnenbehälter: 300 g</li><li>Programme: Espresso, Caffè Crema, Doppio, Intense+ Technologie</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>Kaffeevollautomat</li><li>Bedienungsanleitung</li></ul><p><strong>Maße:</strong> Breite: 180 mm, Höhe: 315 mm, Tiefe: 400 mm, Gewicht: 7,5 kg.<br><strong>Farbe:</strong> Silber.</p></p>","name_kurz":"TCHIBO Esperto Caffè 1.1"},{"id":"coffee_11","name":"GRUNDIG KM 6330 Kaffeemaschine Rot Metallic","brand":"GRUNDIG","Artikelnummer":"1766477","img":"Kaffee_Bild_11.webp","preis":"46,99 €","preis_angebot":"","beschreibung":"<p>Genießen Sie Ihren Kaffee in stilvollem Design mit der GRUNDIG KM 6330 Kaffeemaschine. Diese hochwertige Tropf-Kaffeemaschine bietet eine maximale Leistung von 1000 Watt und ein großzügiges Fassungsvermögen von 1,8 Litern, was eine Zubereitung von bis zu 12 Tassen ermöglicht. Die praktische Warmhaltefunktion hält Ihren Kaffee für lange Zeit angenehm warm, während der Tropfstopp verhindert, dass Kaffee beim Entfernen der Kanne auf die Heizplatte tropft. Die Kaffeemaschine verfügt über ein LCD-Display mit Digitaluhr und einer praktischen Zeitschaltuhr, mit der Sie die Einschaltzeit vorprogrammieren können. Mit der Anzeige für wenig Wasser und abnehmbaren Teilen für eine einfache Reinigung ist die GRUNDIG KM 6330 sowohl benutzerfreundlich als auch pflegeleicht. Der Kaffee wird mit der bewährten Tropf-Technologie zubereitet, und dank der Abschaltautomatik müssen Sie sich keine Sorgen machen, dass das Gerät versehentlich eingeschaltet bleibt. <p><strong>Technische Details:</strong></p><ul><li>Maximale Leistung: 1000 Watt</li><li>Wassertank: 1,8 l</li><li>Tassenanzahl: 12</li><li>LCD Display mit Digitaluhr</li><li>Tropfstopp</li>Zeitschaltuhr</li>vorprogrammierbare Einschaltzeit</li></ul><p><strong>Lieferumfang:</strong></p><ul><li>Kaffeemaschine</li><li>Bedienungsanleitung</li></ul><p><strong>Maße:</strong></p><ul><li> Gewicht: 2330 g</li><li> Farbe: Rot Metallic.</li></ul></p>","name_kurz":"GRUNDIG KM 6330"}]}]};
+			
+			async function waitForContentObject() {
+				while (!ContentObject.products_json) {
+					await new Promise((resolve) => setTimeout(resolve, 10)); // Wait 10ms
+				}
+			}
+
+			(async () => {
+				await waitForContentObject(); // Wait for the data to load
+				
+				let content = extractURL("content");
+				
+				switch(content) {
+					case "product":
+						openProduct(extractURL("category_id"), extractURL("product_id"));
+						break;
+					case "category":
+						initCategoryView();
+						openCategory(extractURL("category_id"));
+						break;
+					case "main":
+						initCategoryView();
+						openCategory(0, true);
+						break;
+					case "impressum":
+						openImpressum();
+						break;
+					default:
+						/* Beim Webseitenstart ausführen */
+						initCategoryView();
+						openCategory(0, true);
+						break;
+				}
+				
+				if (Number(localStorage.firstStart) == 1){
+					if (Number(localStorage.getItem("gruppe")) == 1) {
+						openMessage("onWebshopStart_Kompetenz");
+					}
+					else if (Number(localStorage.getItem("gruppe")) == 2) {
+						openMessage("onWebshopStart_Team");
+					}
+					else if (Number(localStorage.getItem("gruppe")) == 3) {
+						openMessage("onWebshopStart_Autonomie");
+					}
+					localStorage.firstStart = 0;
+				}
+				else if (Number(localStorage.firstStart) != 1 && Number(localStorage.getItem("gruppe")) == 2 && localStorage.user_team == "null"){
+					openMessage("teamWahl");
+				}
+				else if (Number(localStorage.firstStart) != 1 && Number(localStorage.getItem("gruppe")) == 3 && localStorage.user_avatar == "null"){
+					openMessage("autonomieWahl");
+				}
+				
+				window.scrollTo(0, 0);
+			})();	
+			
+		}
+		
+		/* Wenn Webseite geöffnet wird */
+		document.addEventListener('DOMContentLoaded', function() {
+			loadContent();
+		}, false);
+		
+		window.onpopstate = function() {
+			loadContent();
+		}
+    </script>
+  </body>
+</html>

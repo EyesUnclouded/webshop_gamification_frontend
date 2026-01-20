@@ -1,0 +1,19 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+    <!-- Background -->
+    <rect width="400" height="200" fill="#f7f9fc"/>
+    
+    <!-- Logo Symbol -->
+    <circle cx="80" cy="100" r="50" fill="#4A90E2"/>
+    <path d="M65 90 L80 70 L95 90 Z" fill="#FFFFFF"/>
+    <rect x="73" y="100" width="14" height="35" rx="7" fill="#FFFFFF"/>
+    <circle cx="80" cy="145" r="5" fill="#FFFFFF"/>
+
+    <!-- Text -->
+    <text x="140" y="115" font-family="Arial, sans-serif" font-size="30" fill="#333333" font-weight="bold">
+        Fun Media
+    </text>
+    <text x="140" y="150" font-family="Arial, sans-serif" font-size="20" fill="#4A90E2" font-weight="bold">
+        Shop
+    </text>
+</svg>
